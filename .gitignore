@@ -18,4 +18,6 @@ pom.xml.asc
 
 .hgignore
 .hg/
-node_modules/
+
+.lsp/
+.clj-kondo/.cache
