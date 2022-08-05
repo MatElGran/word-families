@@ -1,23 +1,25 @@
 (ns word-families.app
   (:require [reagent.dom :as rdom]
             [re-frame.core :as rf]
+            [day8.re-frame.tracing :refer-macros [fn-traced]]
+            [word-families.core :as core]
             [word-families.config :as config]
-            [day8.re-frame.tracing :refer-macros [fn-traced]]))
+            [word-families.db :as db]))
 
 ;; event handlers
 
-(rf/reg-event-db
+(core/reg-event-db
  ::initialize-db
  (fn-traced
-   [_ _]
-   {::app-name "Word families"}))
+  [_ _]
+  db/initial-db))
 
 ;; subs
 
 (rf/reg-sub
  ::app-name
  (fn [db]
-   (::app-name db)))
+   (::db/app-name db)))
 
 ;; view
 
