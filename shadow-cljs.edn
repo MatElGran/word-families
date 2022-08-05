@@ -6,11 +6,30 @@
 
  :dependencies
  [[reagent "1.1.1"]
-  [re-frame "1.2.0"]]
+  [re-frame "1.2.0"]
+
+  [day8.re-frame/tracing "0.6.2"]
+  [day8.re-frame/re-frame-10x "1.4.1"]]
 
  :dev-http {8080 "public"}
 
  :builds
  {:app
   {:target :browser
-   :modules {:app {:init-fn word-families.app/init}}}}}
+
+   :modules {:app {:init-fn word-families.app/init}}
+
+   :devtools
+   {:preloads [day8.re-frame-10x.preload
+              devtools.preload]}
+
+   :dev
+   {:compiler-options
+    {:closure-defines
+     {re-frame.trace.trace-enabled? true
+      day8.re-frame.tracing.trace-enabled? true}}}
+
+   :release
+   {:build-options
+    {:ns-aliases
+     {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}}}}
