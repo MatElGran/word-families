@@ -1,6 +1,6 @@
 module.exports = function (config) {
   config.set({
-    browsers: ['ChromeHeadlessNoSandbox'],
+    browsers: ['ChromeHeadless'],
     basePath: 'target',
     files: ['karma-test.js'],
     frameworks: ['cljs-test'],
@@ -9,12 +9,6 @@ module.exports = function (config) {
         'karma-chrome-launcher',
         'karma-junit-reporter'
     ],
-    customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
-      }
-      },
     colors: true,
     logLevel: config.LOG_INFO,
     client: {

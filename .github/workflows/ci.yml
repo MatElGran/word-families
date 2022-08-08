@@ -40,7 +40,7 @@ jobs:
       - name: Install playwright managed browsers
         run: npx playwright install
       - name: Install playwright system deps
-        run: apt-get install libgbm1
+        run: sudo apt-get install libgbm1
       - run: npx shadow-cljs start
       - run: npm run release
       - uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
