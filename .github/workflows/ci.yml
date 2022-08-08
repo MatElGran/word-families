@@ -1,0 +1,48 @@
+name: word-families
+on: [push]
+jobs:
+  run-karma-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - run: npm ci
+      - uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
+        with:
+          run: npm run test
+  run-e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: npm
+      - run: npm ci
+      - name: Cache local playwright cache
+        uses: actions/cache@v3
+        with:
+          path: /root/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright
+      - name: Install playwright managed browsers
+        run: npx playwright install
+      - name: Install playwright system deps
+        run: apt-get install libgbm1
+      - run: npx shadow-cljs start
+      - run: npm run release
+      - uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
+        with:
+          run: npm run e2e
