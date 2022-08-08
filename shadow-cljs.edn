@@ -2,7 +2,8 @@
 {:source-paths
  ["src/dev"
   "src/main"
-  "src/test"]
+  "src/test"
+  "src/e2e"]
 
  :dependencies [[reagent "1.1.1"]
                 [re-frame "1.2.0"]
@@ -33,4 +34,8 @@
                          :test-dir "target/browser-test"}
 
           :karma-test {:target :karma
-                       :output-to "target/karma-test.js"}}}
+                       :output-to "target/karma-test.js"}
+
+          :e2e-test {:target :node-test
+                     :ns-regexp "-e2e$"
+                     :output-to "target/e2e-test.js"}}}
