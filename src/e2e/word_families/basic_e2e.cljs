@@ -2,8 +2,7 @@
   (:require-macros [word-families.macros :as m])
   (:require
    [cljs.test :as t]
-   [cljs.core.async :refer [go]]
-   [cljs.core.async.interop :refer-macros [<p!]]
+   [promesa.core :as p]
    ["playwright-core" :as pw]
    [word-families.db :as db]))
 
@@ -24,16 +23,15 @@
 ;;                                  ::db/words ["Dentiste" "Dentelle"]}]
 ;;                  ::db/anomalies ["Tourteau" "Terminer"]}})
 
-;; Go blocks remove type hints, so we have to extract these functions from the test
 (defn launch-browser [] (.launch ^js chromium))
-(defn new-context [browser] (.newContext ^js browser))
-(defn new-page [context] (.newPage ^js context))
+(defn new-page [browser] (.newPage ^js browser))
 (defn goto [page, url] (.goto ^js page url))
 (defn locator [page selector] (.locator ^js page selector))
+(defn get-question-elements [page] (locator page ".field"))
+(defn get-word-elements [page] (locator page ".label"))
 (defn all-inner-texts
-  [page selector]
-  (let [locator (locator page selector)]
-    (.allInnerTexts locator)))
+  [locator ]
+    (.allInnerTexts ^js locator))
 
 (defn load-settings [page]
   (.on ^js page "console" #(println (.text ^js %)))
@@ -45,24 +43,21 @@
                                                                               ::db/words ["Dentiste" "Dentelle"]}]
                                                               ::db/anomalies ["Tourteau" "Terminer"]}}))))
 
-(t/deftest basic-test-2
+;; FIXME: run server with fixtures
+(t/deftest displays-preloaded-settings-correctly
   (t/async done
-           (go
-             (let [browser (<p! (launch-browser))
-                   context (<p! (new-context browser))
-                   page (<p! (new-page context))]
-               (try
-                 (<p! (load-settings page))
-                 (<p! (goto page "http://localhost:8080"))
+           (->
+            (p/let [browser (launch-browser)
+                    page (new-page browser)]
+              (p/do
+                (load-settings page)
+                (goto page "http://localhost:8080"))
+              (p/let [expected-words #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
+                      question-elements (get-question-elements page)
+                      word-elements (get-word-elements question-elements)
+                      actual-words (all-inner-texts word-elements)]
 
-                 (let [expected-words #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
-                       actual-words (into #{} (<p! (all-inner-texts page ".label")))]
-                   (t/is (= expected-words actual-words)))
+                (t/is (= expected-words (into #{} actual-words)))))
 
-                 (catch js/Error err (do
-                                       (println (ex-cause err))
-                                       ;; TODO: this can be more detailed,
-                                       ;; cf https://cljs.github.io/api/cljs.test/try-expr
-                                       (t/report {:type :error}))))
-               (.close browser)
-               (done)))))
+            (p/catch #(println %))
+            (p/finally #(done)))))
