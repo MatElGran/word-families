@@ -1,12 +1,33 @@
 (ns word-families.basic-e2e
   (:require-macros [word-families.macros :as m])
   (:require
-   [cljs.test :as t]
+   [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
    ["playwright-core" :as pw]
    [word-families.db :as db]))
 
 (def chromium (.-chromium pw))
+(def browser (atom nil))
+
+
+(use-fixtures :once
+  {:before
+   (fn []
+     (t/async done
+              (->
+               (p/let [new-browser (.launch chromium)]
+                 (reset! browser new-browser)
+                 (println "Browser started"))
+               (p/catch #(println "Error before suite: " (.-stack %)))
+               (p/finally #(done)))))
+
+   :after
+   (fn []
+     (t/async done
+              (-> (p/then (.close @browser)
+                          #(println "Browser closed"))
+                  (p/catch #(println "Error after suite: " (.-stack %)))
+                  (p/finally #(done)))))})
 
 ;; FIXME: Can't find how to use this with macro expansion
 ;; (def test-families [{::db/name "Terre"
@@ -23,7 +44,6 @@
 ;;                                  ::db/words ["Dentiste" "Dentelle"]}]
 ;;                  ::db/anomalies ["Tourteau" "Terminer"]}})
 
-(defn launch-browser [] (.launch ^js chromium))
 (defn new-page [browser] (.newPage ^js browser))
 (defn goto [page, url] (.goto ^js page url))
 (defn locator [page selector] (.locator ^js page selector))
@@ -47,8 +67,7 @@
 (t/deftest displays-preloaded-settings-correctly
   (t/async done
            (->
-            (p/let [browser (launch-browser)
-                    page (new-page browser)]
+            (p/let [page (new-page @browser)]
               (p/do
                 (load-settings page)
                 (goto page "http://localhost:8080"))
