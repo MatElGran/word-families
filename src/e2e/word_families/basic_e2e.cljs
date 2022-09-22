@@ -9,7 +9,6 @@
 (def chromium (.-chromium pw))
 (def browser (atom nil))
 
-
 (use-fixtures :once
   {:before
    (fn []
@@ -29,7 +28,17 @@
                   (p/catch #(println "Error after suite: " (.-stack %)))
                   (p/finally #(done)))))})
 
-;; FIXME: Can't find how to use this with macro expansion
+(defn load-settings [^js page]
+  (.addInitScript  page
+                  ;; FIXME: Map should be a param
+                   #(set! (.-settings js/window) (m/stringify {::db/current-game
+                                                               {::db/families [{::db/name "Terre"
+                                                                                ::db/words ["Enterrer" "Terrien"]}
+                                                                               {::db/name "Dent"
+                                                                                ::db/words ["Dentiste" "Dentelle"]}]
+                                                                ::db/anomalies ["Tourteau" "Terminer"]}}))))
+
+;; FIXME: Can't find how to use this with macro expansion in .addInitScript
 ;; (def test-families [{::db/name "Terre"
 ;;                      ::db/words ["Enterrer" "Terrien"]}
 ;;                     {::db/name "Dent"
@@ -44,39 +53,55 @@
 ;;                                  ::db/words ["Dentiste" "Dentelle"]}]
 ;;                  ::db/anomalies ["Tourteau" "Terminer"]}})
 
-(defn new-page [browser] (.newPage ^js browser))
-(defn goto [page, url] (.goto ^js page url))
-(defn locator [page selector] (.locator ^js page selector))
-(defn get-question-elements [page] (locator page ".field"))
-(defn get-word-elements [page] (locator page ".label"))
-(defn all-inner-texts
-  [locator ]
-    (.allInnerTexts ^js locator))
+(defn get-question-elements [^js locatorizable] (.locator locatorizable ".field"))
 
-(defn load-settings [page]
-  (.on ^js page "console" #(println (.text ^js %)))
-  (.addInitScript ^js page
-                  #(set! (.-settings js/window) (m/stringify {::db/current-game
-                                                             {::db/families [{::db/name "Terre"
-                                                                              ::db/words ["Enterrer" "Terrien"]}
-                                                                             {::db/name "Dent"
-                                                                              ::db/words ["Dentiste" "Dentelle"]}]
-                                                              ::db/anomalies ["Tourteau" "Terminer"]}}))))
+(defn as_seq [^js locator]
+  (p/let [count (.count locator)]
+    (for [index (range count)] (.nth locator index))))
+
+(defn collect-question-labels [^js locatorizable]
+  (p/let [^js label-elements  (.locator locatorizable ".label")
+          label-texts (.allInnerTexts label-elements)]
+    (into #{} label-texts)))
+
+(defn collect-answers-values [^js locatorizable]
+  (p/let [locators (as_seq (.locator locatorizable "input[type=\"radio\"]"))]
+    (->
+     (map #(.getAttribute % "value") locators)
+     (p/all)
+     (p/then (fn [values] (into #{} values))))))
+
+(defn get-submit-button [^js locatorizable]
+  (.locator locatorizable "input[type=\"submit\"]"))
+
+(defn disabled? [input]
+  (.getAttribute input "disabled"))
 
 ;; FIXME: run server with fixtures
 (t/deftest displays-preloaded-settings-correctly
-  (t/async done
-           (->
-            (p/let [page (new-page @browser)]
-              (p/do
+  (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
+        expected-answer-values #{"Terre" "Dent" "Autre"}]
+
+    (t/async done
+             (->
+              (p/let [^js page (.newPage ^js @browser)]
                 (load-settings page)
-                (goto page "http://localhost:8080"))
-              (p/let [expected-words #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
-                      question-elements (get-question-elements page)
-                      word-elements (get-word-elements question-elements)
-                      actual-words (all-inner-texts word-elements)]
+                (.goto page "http://localhost:8080")
 
-                (t/is (= expected-words (into #{} actual-words)))))
+                  (p/let [question-elements (get-question-elements page)]
 
-            (p/catch #(println %))
-            (p/finally #(done)))))
+                    (p/let [actual-question-labels (collect-question-labels question-elements)]
+                      (t/is (= expected-question-labels actual-question-labels)))
+
+                    (p/let [locators (as_seq question-elements)]
+                      (p/all
+                       (for [question-element locators]
+                         (p/let [actual-answer-values (collect-answers-values question-element)]
+                           (t/is (= expected-answer-values actual-answer-values)))))))
+
+                  (p/let [submit-button (get-submit-button page)
+                          disabled? (disabled? submit-button)]
+                     (t/is disabled?))
+                  )
+              (p/catch #(println (.-stack %)))
+              (p/finally #(done))))))

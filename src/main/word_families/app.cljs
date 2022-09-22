@@ -67,20 +67,27 @@
 
 ;; view
 (defn family-selection-input
-  [word]
+  [families word]
   ;; FIXME: move key metadata up the stack
   ^{:key word} [:div.field
-                [:label.label word]])
+                [:label.label word]
+                [:div.control
+                 (map
+                  #(vector :label.radio {:key %} [:input {:type "radio" :name word :value %}] %)
+                  families)]])
 
 (defn main-view
   []
   (let [app-name (rf/subscribe [::app-name])
+        current-family-names @(rf/subscribe [::current-game-family-names])
         current-word-list @(rf/subscribe [::current-game-word-list])]
+    (println current-family-names)
     [:<>
      [:div.section
       [:h1.title @app-name]]
      [:form
-      (map family-selection-input current-word-list)]]))
+      (conj (map (partial family-selection-input (conj current-family-names "Autre" )) current-word-list) [:input {:disabled "disabled" :type "submit"}])]]))
+
 
 ;; init
 
