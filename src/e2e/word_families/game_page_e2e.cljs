@@ -1,4 +1,4 @@
-(ns word-families.basic-e2e
+(ns word-families.game-page-e2e
   (:require-macros [word-families.macros :as m])
   (:require
    [cljs.test :as t :refer-macros [use-fixtures]]
