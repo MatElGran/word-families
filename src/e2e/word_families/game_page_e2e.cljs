@@ -78,7 +78,7 @@
   (.getAttribute input "disabled"))
 
 ;; FIXME: run server with fixtures
-(t/deftest displays-preloaded-settings-correctly
+(t/deftest displays-game-form
   (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
         expected-answer-values #{"Terre" "Dent" "Autre"}]
 
@@ -88,20 +88,24 @@
                 (load-settings page)
                 (.goto page "http://localhost:8080")
 
+                (t/testing "elements"
                   (p/let [question-elements (get-question-elements page)]
 
-                    (p/let [actual-question-labels (collect-question-labels question-elements)]
-                      (t/is (= expected-question-labels actual-question-labels)))
+                    (t/testing "labels"
+                      (p/let [actual-question-labels (collect-question-labels question-elements)]
+                        (t/is (= expected-question-labels actual-question-labels))))
 
-                    (p/let [locators (as_seq question-elements)]
-                      (p/all
-                       (for [question-element locators]
-                         (p/let [actual-answer-values (collect-answers-values question-element)]
-                           (t/is (= expected-answer-values actual-answer-values)))))))
+                    (t/testing "answers"
+                      (p/let [locators (as_seq question-elements)]
+                        (p/all
+                         (for [question-element locators]
+                           (p/let [actual-answer-values (collect-answers-values question-element)]
+                             (t/is (= expected-answer-values actual-answer-values)))))))))
 
+                (t/testing "button"
                   (p/let [submit-button (get-submit-button page)
                           disabled? (disabled? submit-button)]
-                     (t/is disabled?))
-                  )
+                    (t/is disabled?))))
+
               (p/catch #(println (.-stack %)))
               (p/finally #(done))))))
