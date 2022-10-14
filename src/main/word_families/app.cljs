@@ -47,24 +47,29 @@
      game-groups))))
 
 ;; view
-(defn group-selection-input
-  [groups groupable]
-  ;; FIXME: move key metadata up the stack
-  ^{:key groupable} [:div.field
-                [:label.label groupable]
-                [:div.control
-                 (map
-                  #(vector :label.radio {:key %} [:input {:type "radio" :name groupable :value %}] %)
-                  groups)]])
+
+(defn radio-button [props]
+  [:input (merge props {:type "radio"})])
+
+(defn radio-group
+  [name values]
+  [:fieldset
+   [:legend name]
+   (map
+    (fn [value]
+      ^{:key value} [:label (radio-button {:name name :value value}) value])
+    values)])
 
 (defn main-view
   []
   (let [current-group-names @(rf/subscribe [::current-game-group-names])
         current-groupables @(rf/subscribe [::current-game-groupables])]
-    [:<>
-     [:form
-      (conj (map (partial group-selection-input current-group-names) current-groupables)
-            [:input {:disabled "disabled" :type "submit"}])]]))
+    [:form
+     (map
+      (fn [groupable]
+        ^{:key groupable} [radio-group groupable current-group-names])
+      current-groupables)
+     [:input {:disabled "disabled" :type "submit"}]]))
 
 ;; init
 

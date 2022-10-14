@@ -38,14 +38,14 @@
                                                                             {::db/name "Autre"
                                                                              ::db/members ["Tourteau" "Terminer"]}]}))))
 
-(defn get-question-elements [^js locatorizable] (.locator locatorizable ".field"))
+(defn get-question-elements [^js locatorizable] (.locator locatorizable "fieldset"))
 
 (defn as_seq [^js locator]
   (p/let [count (.count locator)]
     (for [index (range count)] (.nth locator index))))
 
 (defn collect-question-labels [^js locatorizable]
-  (p/let [^js label-elements  (.locator locatorizable ".label")
+  (p/let [^js label-elements  (.locator locatorizable "legend")
           label-texts (.allInnerTexts label-elements)]
     (into #{} label-texts)))
 
