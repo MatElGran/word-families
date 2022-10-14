@@ -38,6 +38,15 @@
                                                                             {::db/name "Autre"
                                                                              ::db/members ["Tourteau" "Terminer"]}]}))))
 
+(def correct-answers {"Enterrer" "Terre"
+                      "Terrien" "Terre"
+                      "Dentiste" "Dent"
+                      "Dentelle" "Dent"
+                      "Tourteau" "Autre"
+                      "Terminer" "Autre"})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn get-question-elements [^js locatorizable] (.locator locatorizable "fieldset"))
 
 (defn as_seq [^js locator]
@@ -59,11 +68,23 @@
 (defn get-submit-button [^js locatorizable]
   (.locator locatorizable "input[type=\"submit\"]"))
 
+(defn check-radio-button [^js page [name value]]
+  (.check (.locator page (str " [name=\"" name "\"][value=\"" value "\"]")) #js {:force true}))
+
+(defn fill-form [page answers]
+  (->
+   (p/all
+    (map (partial check-radio-button page) answers))
+   (p/then (fn [_] page))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn assert-submit-button-disabled [page disabled?]
   (let [submit-button (get-submit-button page)]
     (p/then (.getAttribute submit-button "disabled")
             #(t/is (= disabled? (boolean %))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FIXME: run server with fixtures
 (t/deftest displays-game-form
   (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
@@ -101,6 +122,21 @@
       (.goto page "http://localhost:8080")
 
       (assert-submit-button-disabled  page true))
+
+    (p/catch #(println (.-stack %)))
+    (p/finally #(done)))))
+
+(t/deftest filling-form-enables-submit-button
+  (t/async
+   done
+   (->
+    (p/let [^js page (.newPage ^js @browser)]
+      (load-settings page)
+      (.goto page "http://localhost:8080")
+
+      (p/->
+       (fill-form page correct-answers)
+       (assert-submit-button-disabled false)))
 
     (p/catch #(println (.-stack %)))
     (p/finally #(done)))))

@@ -15,6 +15,12 @@
   [_ [_ settings]]
   (db/initial-db settings)))
 
+(core/reg-event-db
+ ::register-answer
+ (fn-traced
+  [db [_ groupable group]]
+  (assoc-in db [::db/current-game ::db/answers groupable] group)))
+
 ;; subs
 
 (rf/reg-sub
@@ -27,6 +33,12 @@
  :<- [::current-game]
  (fn [game _]
    (::db/groups game)))
+
+(rf/reg-sub
+ ::answers
+ :<- [::current-game]
+ (fn [game _]
+   (::db/answers game)))
 
 (rf/reg-sub
  ::current-game-group-names
@@ -52,24 +64,33 @@
   [:input (merge props {:type "radio"})])
 
 (defn radio-group
-  [name values]
+  [name checked-value choices]
   [:fieldset
    [:legend name]
    (map
-    (fn [value]
-      ^{:key value} [:label (radio-button {:name name :value value}) value])
-    values)])
+    (fn [input-value]
+      ^{:key input-value} [:label
+                           (radio-button {:name name
+                                          :value input-value
+                                          :on-change #(rf/dispatch [::register-answer name input-value])
+                                          :checked (= checked-value input-value)})
+                           input-value])
+    choices)])
 
 (defn main-view
   []
   (let [current-group-names @(rf/subscribe [::current-game-group-names])
-        current-groupables @(rf/subscribe [::current-game-groupables])]
+        current-groupables @(rf/subscribe [::current-game-groupables])
+        answers @(rf/subscribe [::answers])
+        submit-disabled? (< (count answers)
+                            (count current-groupables))]
     [:form
+     {:on-submit #(.preventDefault %)}
      (map
       (fn [groupable]
-        ^{:key groupable} [radio-group groupable current-group-names])
+        ^{:key groupable} [radio-group groupable (answers groupable) current-group-names])
       current-groupables)
-     [:input {:disabled "disabled" :type "submit"}]]))
+     [:input {:disabled submit-disabled? :type "submit"}]]))
 
 ;; init
 

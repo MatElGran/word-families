@@ -13,7 +13,8 @@
                       ::members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
 
 (defn new-game [groups]
-  {::groups groups})
+  {::groups groups
+   ::answers {}})
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
@@ -25,7 +26,8 @@
 (s/def ::members (s/coll-of string?))
 (s/def ::group (s/keys :req [::name ::members]))
 (s/def ::groups (s/coll-of ::group))
-(s/def ::current-game (s/keys :req [::groups]))
+(s/def ::answers (s/map-of string? string?))
+(s/def ::current-game (s/keys :req [::groups ::answers]))
 (s/def ::schema (s/keys :req [::current-game]))
 
 (defn valid-schema?
