@@ -29,12 +29,6 @@
    (::db/groups game)))
 
 (rf/reg-sub
- ::current-game-anomalies
- :<- [::current-game]
- (fn [game _]
-   (::db/anomalies game)))
-
-(rf/reg-sub
  ::current-game-family-names
  :<- [::current-game-families]
  (fn [game-families _]
@@ -44,21 +38,13 @@
     game-families)))
 
 (rf/reg-sub
- ::current-game-family-words
+ ::current-game-word-list
  :<- [::current-game-families]
  (fn [game-families _]
    (flatten
     (map
      (fn [family] (::db/members family))
      game-families))))
-
-(rf/reg-sub
- ::current-game-word-list
- :<- [::current-game-family-words]
- :<- [::current-game-anomalies]
- (fn [[family-words anomalies] _]
-   (let [all-words (apply conj family-words anomalies)]
-     (shuffle all-words))))
 
 ;; view
 (defn family-selection-input
@@ -75,11 +61,10 @@
   []
   (let [current-family-names @(rf/subscribe [::current-game-family-names])
         current-word-list @(rf/subscribe [::current-game-word-list])]
-    (println current-family-names)
     [:<>
      [:form
-      (conj (map (partial family-selection-input (conj current-family-names "Autre" )) current-word-list) [:input {:disabled "disabled" :type "submit"}])]]))
-
+      (conj (map (partial family-selection-input current-family-names) current-word-list)
+            [:input {:disabled "disabled" :type "submit"}])]]))
 
 ;; init
 

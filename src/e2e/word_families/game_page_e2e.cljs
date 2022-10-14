@@ -33,10 +33,11 @@
                   ;; FIXME: Map should be a param
                    #(set! (.-settings js/window) (m/stringify {::db/current-game
                                                                {::db/groups [{::db/name "Terre"
-                                                                                ::db/members ["Enterrer" "Terrien"]}
-                                                                               {::db/name "Dent"
-                                                                                ::db/members ["Dentiste" "Dentelle"]}]
-                                                                ::db/anomalies ["Tourteau" "Terminer"]}}))))
+                                                                              ::db/members ["Enterrer" "Terrien"]}
+                                                                             {::db/name "Dent"
+                                                                              ::db/members ["Dentiste" "Dentelle"]}
+                                                                             {::db/name "Autre"
+                                                                              ::db/members ["Tourteau" "Terminer"]}]}}))))
 
 (defn get-question-elements [^js locatorizable] (.locator locatorizable ".field"))
 

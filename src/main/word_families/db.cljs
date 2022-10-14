@@ -1,18 +1,18 @@
 (ns word-families.db
   (:require [clojure.spec.alpha :as s]))
 
-(def default-families [{::name "Terre"
+(def default-groups [{::name "Terre"
                         ::members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]}
                        {::name "Dent"
                         ::members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]}
                        {::name "Tourner"
                         ::members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]}
                        {::name "Cheval"
-                        ::members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}])
+                        ::members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}
+                       {::name "Autre"
+                        ::members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
 
-(def default-anomalies ["Tourteau" "Terminer" "Chevelure" "Accident"])
-
-(def default-game {::families default-families ::anomalies default-anomalies})
+(def default-game {::groups default-groups})
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
@@ -22,10 +22,9 @@
 
 (s/def ::name string?)
 (s/def ::members (s/coll-of string?))
-(s/def ::family (s/keys :req [::name ::members]))
-(s/def ::families (s/coll-of ::family))
-(s/def ::anomalies (s/coll-of string?))
-(s/def ::current-game (s/keys :req [::families ::anomalies]))
+(s/def ::group (s/keys :req [::name ::members]))
+(s/def ::groups (s/coll-of ::group))
+(s/def ::current-game (s/keys :req [::groups]))
 (s/def ::schema (s/keys :req [::current-game]))
 
 (defn valid-schema?
