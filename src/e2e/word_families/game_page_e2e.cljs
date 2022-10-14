@@ -59,8 +59,10 @@
 (defn get-submit-button [^js locatorizable]
   (.locator locatorizable "input[type=\"submit\"]"))
 
-(defn disabled? [input]
-  (.getAttribute input "disabled"))
+(defn assert-submit-button-disabled [page disabled?]
+  (let [submit-button (get-submit-button page)]
+    (p/then (.getAttribute submit-button "disabled")
+            #(t/is (= disabled? (boolean %))))))
 
 ;; FIXME: run server with fixtures
 (t/deftest displays-game-form
@@ -85,12 +87,20 @@
                         (p/all
                          (for [question-element locators]
                            (p/let [actual-answer-values (collect-answers-values question-element)]
-                             (t/is (= expected-answer-values actual-answer-values)))))))))
-
-                (t/testing "button"
-                  (p/let [submit-button (get-submit-button page)
-                          disabled? (disabled? submit-button)]
-                    (t/is disabled?))))
+                             (t/is (= expected-answer-values actual-answer-values))))))))))
 
               (p/catch #(println (.-stack %)))
               (p/finally #(done))))))
+
+(t/deftest initially-disabled-submit-button
+  (t/async
+   done
+   (->
+    (p/let [^js page (.newPage ^js @browser)]
+      (load-settings page)
+      (.goto page "http://localhost:8080")
+
+      (assert-submit-button-disabled  page true))
+
+    (p/catch #(println (.-stack %)))
+    (p/finally #(done)))))
