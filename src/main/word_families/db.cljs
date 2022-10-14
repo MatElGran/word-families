@@ -2,23 +2,24 @@
   (:require [clojure.spec.alpha :as s]))
 
 (def default-groups [{::name "Terre"
-                        ::members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]}
-                       {::name "Dent"
-                        ::members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]}
-                       {::name "Tourner"
-                        ::members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]}
-                       {::name "Cheval"
-                        ::members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}
-                       {::name "Autre"
-                        ::members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
+                      ::members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]}
+                     {::name "Dent"
+                      ::members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]}
+                     {::name "Tourner"
+                      ::members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]}
+                     {::name "Cheval"
+                      ::members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}
+                     {::name "Autre"
+                      ::members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
 
-(def default-game {::groups default-groups})
+(defn new-game [groups]
+  {::groups groups})
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
   [settings]
-  (let [new-db (merge {::current-game default-game} settings)]
-    new-db))
+  (let [groups (or (get-in settings [::current-game ::groups]) default-groups)]
+    {::current-game (new-game groups)}))
 
 (s/def ::name string?)
 (s/def ::members (s/coll-of string?))
