@@ -23,47 +23,47 @@
    (::db/current-game db)))
 
 (rf/reg-sub
- ::current-game-families
+ ::current-game-groups
  :<- [::current-game]
  (fn [game _]
    (::db/groups game)))
 
 (rf/reg-sub
- ::current-game-family-names
- :<- [::current-game-families]
- (fn [game-families _]
+ ::current-game-group-names
+ :<- [::current-game-groups]
+ (fn [game-groups _]
    (map
-    (fn [family]
-      (::db/name family))
-    game-families)))
+    (fn [group]
+      (::db/name group))
+    game-groups)))
 
 (rf/reg-sub
  ::current-game-word-list
- :<- [::current-game-families]
- (fn [game-families _]
+ :<- [::current-game-groups]
+ (fn [game-groups _]
    (flatten
     (map
-     (fn [family] (::db/members family))
-     game-families))))
+     (fn [group] (::db/members group))
+     game-groups))))
 
 ;; view
-(defn family-selection-input
-  [families word]
+(defn group-selection-input
+  [groups word]
   ;; FIXME: move key metadata up the stack
   ^{:key word} [:div.field
                 [:label.label word]
                 [:div.control
                  (map
                   #(vector :label.radio {:key %} [:input {:type "radio" :name word :value %}] %)
-                  families)]])
+                  groups)]])
 
 (defn main-view
   []
-  (let [current-family-names @(rf/subscribe [::current-game-family-names])
+  (let [current-group-names @(rf/subscribe [::current-game-group-names])
         current-word-list @(rf/subscribe [::current-game-word-list])]
     [:<>
      [:form
-      (conj (map (partial family-selection-input current-family-names) current-word-list)
+      (conj (map (partial group-selection-input current-group-names) current-word-list)
             [:input {:disabled "disabled" :type "submit"}])]]))
 
 ;; init
