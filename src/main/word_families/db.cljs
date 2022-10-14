@@ -18,7 +18,7 @@
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
   [settings]
-  (let [groups (or (get-in settings [::current-game ::groups]) default-groups)]
+  (let [groups (or (::groups settings) default-groups)]
     {::current-game (new-game groups)}))
 
 (s/def ::name string?)
