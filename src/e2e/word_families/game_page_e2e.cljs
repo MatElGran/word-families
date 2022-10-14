@@ -32,26 +32,11 @@
   (.addInitScript  page
                   ;; FIXME: Map should be a param
                    #(set! (.-settings js/window) (m/stringify {::db/current-game
-                                                               {::db/families [{::db/name "Terre"
-                                                                                ::db/words ["Enterrer" "Terrien"]}
+                                                               {::db/groups [{::db/name "Terre"
+                                                                                ::db/members ["Enterrer" "Terrien"]}
                                                                                {::db/name "Dent"
-                                                                                ::db/words ["Dentiste" "Dentelle"]}]
+                                                                                ::db/members ["Dentiste" "Dentelle"]}]
                                                                 ::db/anomalies ["Tourteau" "Terminer"]}}))))
-
-;; FIXME: Can't find how to use this with macro expansion in .addInitScript
-;; (def test-families [{::db/name "Terre"
-;;                      ::db/words ["Enterrer" "Terrien"]}
-;;                     {::db/name "Dent"
-;;                      ::db/words ["Dentiste" "Dentelle"]}])
-;;
-;; (def test-anomalies ["Tourteau" "Terminer"])
-;;
-;; (def test-game {::db/current-game
-;;                 {::db/families [{::db/name "Terre"
-;;                                  ::db/words ["Enterrer" "Terrien"]}
-;;                                 {::db/name "Dent"
-;;                                  ::db/words ["Dentiste" "Dentelle"]}]
-;;                  ::db/anomalies ["Tourteau" "Terminer"]}})
 
 (defn get-question-elements [^js locatorizable] (.locator locatorizable ".field"))
 

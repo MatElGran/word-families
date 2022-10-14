@@ -26,7 +26,7 @@
  ::current-game-families
  :<- [::current-game]
  (fn [game _]
-   (::db/families game)))
+   (::db/groups game)))
 
 (rf/reg-sub
  ::current-game-anomalies
@@ -49,7 +49,7 @@
  (fn [game-families _]
    (flatten
     (map
-     (fn [family] (::db/words family))
+     (fn [family] (::db/members family))
      game-families))))
 
 (rf/reg-sub
