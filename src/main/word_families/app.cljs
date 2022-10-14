@@ -18,11 +18,6 @@
 ;; subs
 
 (rf/reg-sub
- ::app-name
- (fn [db]
-   (::db/app-name db)))
-
-(rf/reg-sub
  ::current-game
  (fn [db]
    (::db/current-game db)))
@@ -78,13 +73,10 @@
 
 (defn main-view
   []
-  (let [app-name (rf/subscribe [::app-name])
-        current-family-names @(rf/subscribe [::current-game-family-names])
+  (let [current-family-names @(rf/subscribe [::current-game-family-names])
         current-word-list @(rf/subscribe [::current-game-word-list])]
     (println current-family-names)
     [:<>
-     [:div.section
-      [:h1.title @app-name]]
      [:form
       (conj (map (partial family-selection-input (conj current-family-names "Autre" )) current-word-list) [:input {:disabled "disabled" :type "submit"}])]]))
 
