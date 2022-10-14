@@ -38,7 +38,7 @@
     game-groups)))
 
 (rf/reg-sub
- ::current-game-word-list
+ ::current-game-groupables
  :<- [::current-game-groups]
  (fn [game-groups _]
    (flatten
@@ -48,22 +48,22 @@
 
 ;; view
 (defn group-selection-input
-  [groups word]
+  [groups groupable]
   ;; FIXME: move key metadata up the stack
-  ^{:key word} [:div.field
-                [:label.label word]
+  ^{:key groupable} [:div.field
+                [:label.label groupable]
                 [:div.control
                  (map
-                  #(vector :label.radio {:key %} [:input {:type "radio" :name word :value %}] %)
+                  #(vector :label.radio {:key %} [:input {:type "radio" :name groupable :value %}] %)
                   groups)]])
 
 (defn main-view
   []
   (let [current-group-names @(rf/subscribe [::current-game-group-names])
-        current-word-list @(rf/subscribe [::current-game-word-list])]
+        current-groupables @(rf/subscribe [::current-game-groupables])]
     [:<>
      [:form
-      (conj (map (partial group-selection-input current-group-names) current-word-list)
+      (conj (map (partial group-selection-input current-group-names) current-groupables)
             [:input {:disabled "disabled" :type "submit"}])]]))
 
 ;; init
