@@ -92,10 +92,10 @@
    (map
     (fn [input-value]
       ^{:key input-value} [:label
-                           (radio-button {:name name
+                           [radio-button {:name name
                                           :value input-value
                                           :on-change #(rf/dispatch [::register-answer name input-value])
-                                          :checked (= checked-value input-value)})
+                                          :checked (= checked-value input-value)}]
                            input-value])
     choices)])
 
