@@ -45,6 +45,14 @@
                       "Tourteau" "Autre"
                       "Terminer" "Autre"})
 
+(def incorrect-answers {"Enterrer" "Dent"
+                        "Dentiste" "Terre"
+
+                        "Terrien" "Terre"
+                        "Dentelle" "Dent"
+                        "Tourteau" "Autre"
+                        "Terminer" "Autre"})
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-question-elements [^js locatorizable] (.locator locatorizable "fieldset"))
@@ -77,6 +85,11 @@
     (map (partial check-radio-button page) answers))
    (p/then (fn [_] page))))
 
+(defn submit-form [page]
+  (let [submit-button (get-submit-button page)]
+    (p/then (.click submit-button)
+            (fn [_] page))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn assert-submit-button-disabled [page disabled?]
@@ -84,7 +97,36 @@
     (p/then (.getAttribute submit-button "disabled")
             #(t/is (= disabled? (boolean %))))))
 
+(defn assert-success-message-is-displayed [^js page]
+  (p/let [visible-success-message? (.isVisible (.locator page "role=status" #js {:hasText "gagné"}))]
+
+    (t/is (= true visible-success-message?))
+
+    page))
+
+(defn assert-success-message-is-not-displayed [^js page]
+  (p/let [visible-success-message? (.isVisible (.locator page "role=status" #js {:hasText "gagné"}))]
+
+    (t/is (= false visible-success-message?))
+
+    page))
+
+(defn assert-failure-message-is-displayed [^js page]
+  (p/let [visible-failure-message?  (.isVisible (.locator page "role=status" #js {:hasText "erreurs"}))]
+
+    (t/is (= true visible-failure-message?))
+
+    page))
+
+(defn assert-failure-message-is-not-displayed [^js page]
+  (p/let [visible-failure-message?  (.isVisible (.locator page "role=status" #js {:hasText "erreurs"}))]
+
+    (t/is (= false visible-failure-message?))
+
+    page))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; FIXME: run server with fixtures
 (t/deftest displays-game-form
   (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
@@ -137,6 +179,48 @@
       (p/->
        (fill-form page correct-answers)
        (assert-submit-button-disabled false)))
+
+    (p/catch #(println (.-stack %)))
+    (p/finally #(done)))))
+
+(t/deftest user-submit-correct-answer
+  (t/async
+   done
+   (->
+    (p/let [^js page (.newPage ^js @browser)]
+      (load-settings page)
+      (.goto page "http://localhost:8080")
+
+      (p/-> page
+            (assert-success-message-is-not-displayed)
+            (assert-failure-message-is-not-displayed)
+
+            (fill-form correct-answers)
+            (submit-form)
+
+            (assert-success-message-is-displayed)
+            (assert-failure-message-is-not-displayed)))
+
+    (p/catch #(println (.-stack %)))
+    (p/finally #(done)))))
+
+(t/deftest user-submit-incorrect-answer
+  (t/async
+   done
+   (->
+    (p/let [^js page (.newPage ^js @browser)]
+      (load-settings page)
+      (.goto page "http://localhost:8080")
+
+      (p/-> page
+            (assert-success-message-is-not-displayed)
+            (assert-failure-message-is-not-displayed)
+
+            (fill-form incorrect-answers)
+            (submit-form)
+
+            (assert-failure-message-is-displayed)
+            (assert-success-message-is-not-displayed)))
 
     (p/catch #(println (.-stack %)))
     (p/finally #(done)))))

@@ -12,9 +12,25 @@
                      {::name "Autre"
                       ::members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
 
+(defn- group->answers [group]
+  (let [group-name (::name group)
+        members (::members group)]
+    (zipmap members (repeat group-name))))
+
+(defn- groups->answers [groups]
+  (reduce
+   (fn [memo group]
+     (merge memo (group->answers group)))
+   {}
+   groups))
+
 (defn new-game [groups]
-  {::groups groups
-   ::answers {}})
+  (let [expected-answers (groups->answers groups)]
+    {::groups groups
+     ::expected-answers expected-answers
+     ::answers {}
+     ::verified? false
+     ::valid? false}))
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
@@ -22,12 +38,21 @@
   (let [groups (or (::groups settings) default-groups)]
     {::current-game (new-game groups)}))
 
+(def answers-map? (s/map-of string? string?))
+
 (s/def ::name string?)
 (s/def ::members (s/coll-of string?))
 (s/def ::group (s/keys :req [::name ::members]))
 (s/def ::groups (s/coll-of ::group))
-(s/def ::answers (s/map-of string? string?))
-(s/def ::current-game (s/keys :req [::groups ::answers]))
+(s/def ::expected-answers answers-map?)
+(s/def ::answers answers-map?)
+(s/def ::verified? boolean?)
+(s/def ::valid? boolean?)
+(s/def ::current-game (s/keys :req [::groups
+                                    ::expected-answers
+                                    ::answers
+                                    ::verified?
+                                    ::valid?]))
 (s/def ::schema (s/keys :req [::current-game]))
 
 (defn valid-schema?

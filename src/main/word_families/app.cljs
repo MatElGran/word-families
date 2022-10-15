@@ -21,6 +21,16 @@
   [db [_ groupable group]]
   (assoc-in db [::db/current-game ::db/answers groupable] group)))
 
+(core/reg-event-db
+ ::validate-answers
+ (fn-traced
+  [db _]
+  (let [actual-answers (get-in db [::db/current-game ::db/answers])
+        expected-answers (get-in db [::db/current-game ::db/expected-answers])
+        valid? (= expected-answers actual-answers)]
+    (-> db
+        (assoc-in [::db/current-game ::db/verified?] true)
+        (assoc-in [::db/current-game ::db/valid?] valid?)))))
 ;; subs
 
 (rf/reg-sub
@@ -39,6 +49,18 @@
  :<- [::current-game]
  (fn [game _]
    (::db/answers game)))
+
+(rf/reg-sub
+ ::verified?
+ :<- [::current-game]
+ (fn [game _]
+   (::db/verified? game)))
+
+(rf/reg-sub
+ ::valid?
+ :<- [::current-game]
+ (fn [game _]
+   (::db/valid? game)))
 
 (rf/reg-sub
  ::current-game-group-names
@@ -77,6 +99,16 @@
                            input-value])
     choices)])
 
+(defn validation-message []
+  (let [verified? @(rf/subscribe [::verified?])
+        valid? @(rf/subscribe [::valid?])]
+    (when verified?
+      [:span
+       {:role "status"}
+       (if valid?
+         "Bravo! tu as gagné"
+         "Il y a quelques erreurs, essaye de corriger")])))
+
 (defn main-view
   []
   (let [current-group-names @(rf/subscribe [::current-game-group-names])
@@ -84,13 +116,17 @@
         answers @(rf/subscribe [::answers])
         submit-disabled? (< (count answers)
                             (count current-groupables))]
-    [:form
-     {:on-submit #(.preventDefault %)}
-     (map
-      (fn [groupable]
-        ^{:key groupable} [radio-group groupable (answers groupable) current-group-names])
-      current-groupables)
-     [:input {:disabled submit-disabled? :type "submit"}]]))
+    [:<>
+     [validation-message]
+     [:form
+      {:on-submit (fn [event]
+                    (.preventDefault event)
+                    (rf/dispatch [::validate-answers]))}
+      (map
+       (fn [groupable]
+         ^{:key groupable} [radio-group groupable (answers groupable) current-group-names])
+       current-groupables)
+      [:input {:disabled submit-disabled? :type "submit"}]]]))
 
 ;; init
 
