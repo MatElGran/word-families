@@ -77,7 +77,9 @@
   (.locator locatorizable "input[type=\"submit\"]"))
 
 (defn check-radio-button [^js page [name value]]
-  (.check (.locator page (str " [name=\"" name "\"][value=\"" value "\"]")) #js {:force true}))
+  (-> page
+      (.locator (str " [name=\"" name "\"][value=\"" value "\"]"))
+      (.check #js {:force true})))
 
 (defn fill-form [page answers]
   (->
