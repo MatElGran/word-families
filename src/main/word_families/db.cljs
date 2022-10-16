@@ -26,7 +26,7 @@
 
 (defn new-game [groups]
   (let [expected-answers (groups->answers groups)]
-    {::groups groups
+    {::group-names (map ::name  groups)
      ::expected-answers expected-answers
      ::answers {}
      ::errors {}
@@ -44,11 +44,12 @@
 (s/def ::members (s/coll-of string?))
 (s/def ::group (s/keys :req [::name ::members]))
 (s/def ::groups (s/coll-of ::group))
+(s/def ::group-names (s/coll-of ::name))
 (s/def ::expected-answers answers-map?)
 (s/def ::errors answers-map?)
 (s/def ::answers answers-map?)
 (s/def ::verified? boolean?)
-(s/def ::current-game (s/keys :req [::groups
+(s/def ::current-game (s/keys :req [::group-names
                                     ::expected-answers
                                     ::answers
                                     ::errors

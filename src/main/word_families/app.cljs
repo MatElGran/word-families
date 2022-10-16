@@ -40,10 +40,10 @@
    (::db/current-game db)))
 
 (rf/reg-sub
- ::current-game-groups
+ ::expected-answers
  :<- [::current-game]
  (fn [game _]
-   (::db/groups game)))
+   (::db/expected-answers game)))
 
 (rf/reg-sub
  ::answers
@@ -71,21 +71,15 @@
 
 (rf/reg-sub
  ::current-game-group-names
- :<- [::current-game-groups]
- (fn [game-groups _]
-   (map
-    (fn [group]
-      (::db/name group))
-    game-groups)))
+ :<- [::current-game]
+ (fn [game _]
+   (::db/group-names game)))
 
 (rf/reg-sub
  ::current-game-groupables
- :<- [::current-game-groups]
- (fn [game-groups _]
-   (flatten
-    (map
-     (fn [group] (::db/members group))
-     game-groups))))
+ :<- [::expected-answers]
+ (fn [expected-answers _]
+   (keys expected-answers)))
 
 ;; view
 
@@ -100,7 +94,7 @@
    (map
     (fn [input-value]
       (let [checked? (= checked-value input-value)
-            invalid-mark (if checked? {:aria-invalid true :aria-errormessage (str "error-message-" name) } {})]
+            invalid-mark (if checked? {:aria-invalid true :aria-errormessage (str "error-message-" name)} {})]
         ^{:key input-value} [:label
                              [radio-button
                               (merge invalid-mark {:name name
