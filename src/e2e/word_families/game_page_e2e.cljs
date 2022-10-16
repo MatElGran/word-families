@@ -154,7 +154,7 @@
                            (p/let [actual-answer-values (collect-answers-values question-element)]
                              (t/is (= expected-answer-values actual-answer-values))))))))))
 
-              (p/catch #(println (.-stack %)))
+              (p/catch (fn [error] (t/do-report {:type :error :actual error})))
               (p/finally #(done))))))
 
 (t/deftest initially-disabled-submit-button
@@ -167,7 +167,7 @@
 
       (assert-submit-button-disabled  page true))
 
-    (p/catch #(println (.-stack %)))
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
 
 (t/deftest filling-form-enables-submit-button
@@ -182,7 +182,7 @@
        (fill-form page correct-answers)
        (assert-submit-button-disabled false)))
 
-    (p/catch #(println (.-stack %)))
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
 
 (t/deftest user-submit-correct-answer
@@ -203,7 +203,7 @@
             (assert-success-message-is-displayed)
             (assert-failure-message-is-not-displayed)))
 
-    (p/catch #(println (.-stack %)))
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
 
 (t/deftest user-submit-incorrect-answer
@@ -224,5 +224,5 @@
             (assert-failure-message-is-displayed)
             (assert-success-message-is-not-displayed)))
 
-    (p/catch #(println (.-stack %)))
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
