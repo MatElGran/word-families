@@ -147,28 +147,29 @@
   (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
         expected-answer-values #{"Terre" "Dent" "Autre"}]
 
-    (t/async done
-             (->
-              (p/let [^js page (.newPage ^js @browser)]
-                (load-settings page)
-                (.goto page "http://localhost:8080")
+    (t/async
+     done
+     (->
+      (p/let [^js page (.newPage ^js @browser)]
+        (load-settings page)
+        (.goto page "http://localhost:8080")
 
-                (t/testing "elements"
-                  (p/let [question-elements (get-question-elements page)]
+        (t/testing "elements"
+          (p/let [question-elements (get-question-elements page)]
 
-                    (t/testing "labels"
-                      (p/let [actual-question-labels (collect-question-labels question-elements)]
-                        (t/is (= expected-question-labels actual-question-labels))))
+            (t/testing "labels"
+              (p/let [actual-question-labels (collect-question-labels question-elements)]
+                (t/is (= expected-question-labels actual-question-labels))))
 
-                    (t/testing "answers"
-                      (p/let [locators (as_seq question-elements)]
-                        (p/all
-                         (for [question-element locators]
-                           (p/let [actual-answer-values (collect-answers-values question-element)]
-                             (t/is (= expected-answer-values actual-answer-values))))))))))
+            (t/testing "answers"
+              (p/let [locators (as_seq question-elements)]
+                (p/all
+                 (for [question-element locators]
+                   (p/let [actual-answer-values (collect-answers-values question-element)]
+                     (t/is (= expected-answer-values actual-answer-values))))))))))
 
-              (p/catch (fn [error] (t/do-report {:type :error :actual error})))
-              (p/finally #(done))))))
+      (p/catch (fn [error] (t/do-report {:type :error :actual error})))
+      (p/finally #(done))))))
 
 (t/deftest initially-disabled-submit-button
   (t/async
