@@ -29,8 +29,8 @@
     {::groups groups
      ::expected-answers expected-answers
      ::answers {}
-     ::verified? false
-     ::valid? false}))
+     ::errors {}
+     ::verified? false}))
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
@@ -45,14 +45,14 @@
 (s/def ::group (s/keys :req [::name ::members]))
 (s/def ::groups (s/coll-of ::group))
 (s/def ::expected-answers answers-map?)
+(s/def ::errors answers-map?)
 (s/def ::answers answers-map?)
 (s/def ::verified? boolean?)
-(s/def ::valid? boolean?)
 (s/def ::current-game (s/keys :req [::groups
                                     ::expected-answers
                                     ::answers
-                                    ::verified?
-                                    ::valid?]))
+                                    ::errors
+                                    ::verified?]))
 (s/def ::schema (s/keys :req [::current-game]))
 
 (defn valid-schema?

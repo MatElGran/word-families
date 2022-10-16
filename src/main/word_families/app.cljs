@@ -27,10 +27,11 @@
   [db _]
   (let [actual-answers (get-in db [::db/current-game ::db/answers])
         expected-answers (get-in db [::db/current-game ::db/expected-answers])
-        valid? (= expected-answers actual-answers)]
+        error? (fn [answer] (not (= (get answer 1) (get expected-answers (get answer 0)))))
+        errors (into {} (filter error? actual-answers))]
     (-> db
         (assoc-in [::db/current-game ::db/verified?] true)
-        (assoc-in [::db/current-game ::db/valid?] valid?)))))
+        (assoc-in [::db/current-game ::db/errors] errors)))))
 ;; subs
 
 (rf/reg-sub
@@ -51,6 +52,12 @@
    (::db/answers game)))
 
 (rf/reg-sub
+ ::errors
+ :<- [::current-game]
+ (fn [game _]
+   (::db/errors game)))
+
+(rf/reg-sub
  ::verified?
  :<- [::current-game]
  (fn [game _]
@@ -58,9 +65,9 @@
 
 (rf/reg-sub
  ::valid?
- :<- [::current-game]
- (fn [game _]
-   (::db/valid? game)))
+ :<- [::errors]
+ (fn [errors _]
+   (empty? errors)))
 
 (rf/reg-sub
  ::current-game-group-names
@@ -85,9 +92,29 @@
 (defn radio-button [props]
   [:input (merge props {:type "radio"})])
 
+(defn invalid-radio-group
+  [name checked-value choices]
+  [:fieldset
+   {:role "radiogroup"}
+   [:legend name]
+   (map
+    (fn [input-value]
+      (let [checked? (= checked-value input-value)
+            invalid-mark (if checked? {:aria-invalid true :aria-errormessage (str "error-message-" name) } {})]
+        ^{:key input-value} [:label
+                             [radio-button
+                              (merge invalid-mark {:name name
+                                                   :value input-value
+                                                   :on-change #(rf/dispatch [::register-answer name input-value])
+                                                   :checked checked?})]
+                             input-value]))
+    choices)
+   [:div {:id (str "error-message-" name)} (str name " ne fait pas partie du groupe défini par " checked-value)]])
+
 (defn radio-group
   [name checked-value choices]
   [:fieldset
+   {:role "radiogroup"}
    [:legend name]
    (map
     (fn [input-value]
@@ -114,6 +141,7 @@
   (let [current-group-names @(rf/subscribe [::current-game-group-names])
         current-groupables @(rf/subscribe [::current-game-groupables])
         answers @(rf/subscribe [::answers])
+        errors @(rf/subscribe [::errors])
         submit-disabled? (< (count answers)
                             (count current-groupables))]
     [:<>
@@ -124,7 +152,9 @@
                     (rf/dispatch [::validate-answers]))}
       (map
        (fn [groupable]
-         ^{:key groupable} [radio-group groupable (answers groupable) current-group-names])
+         (if (errors groupable)
+           ^{:key groupable} [invalid-radio-group groupable (answers groupable) current-group-names]
+           ^{:key groupable} [radio-group groupable (answers groupable) current-group-names]))
        current-groupables)
       [:input {:disabled submit-disabled? :type "submit"}]]]))
 

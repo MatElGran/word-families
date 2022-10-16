@@ -46,13 +46,8 @@
                       "Tourteau" "Autre"
                       "Terminer" "Autre"})
 
-(def incorrect-answers {"Enterrer" "Dent"
-                        "Dentiste" "Terre"
-
-                        "Terrien" "Terre"
-                        "Dentelle" "Dent"
-                        "Tourteau" "Autre"
-                        "Terminer" "Autre"})
+(def errors {"Enterrer" "Dent"
+             "Dentiste" "Terre"})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -138,6 +133,19 @@
 (defn assert-failure-message-is-not-displayed [^js page]
   (p/then
    (assert-not-visible (.locator page "role=status" #js {:hasText "erreurs"}))
+   (constantly page)))
+
+(defn assert-errors-are-displayed [^js page errors]
+  (p/then
+   (p/all
+     (map
+       #(assert-visible (.locator page (str "[aria-invalid=true][name=" (get % 0) "][value=" (get % 1) "]")))
+       errors))
+   (constantly page)))
+
+(defn assert-no-errors-are-displayed [^js page]
+  (p/then
+   (assert-not-visible (.locator page "[aria-invalid=true]"))
    (constantly page)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -232,11 +240,30 @@
             (assert-success-message-is-not-displayed)
             (assert-failure-message-is-not-displayed)
 
-            (fill-form incorrect-answers)
+            (fill-form (merge correct-answers errors))
             (submit-form)
 
             (assert-failure-message-is-displayed)
             (assert-success-message-is-not-displayed)))
+
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
+    (p/finally #(done)))))
+
+(t/deftest incorrect-answer-are-displayed
+  (t/async
+   done
+   (->
+    (p/let [^js page (.newPage ^js @browser)]
+      (load-settings page)
+      (.goto page "http://localhost:8080")
+
+      (p/-> page
+            (assert-no-errors-are-displayed)
+
+            (fill-form (merge correct-answers errors))
+            (submit-form)
+
+            (assert-errors-are-displayed errors)))
 
     (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
