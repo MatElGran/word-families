@@ -3,6 +3,7 @@
   (:require
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
+   [promesa.exec :as exec]
    ["playwright-core" :as pw]
    [word-families.db :as db]))
 
@@ -55,6 +56,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn after [ms fn]
+  (let [promise (p/deferred)]
+    (exec/schedule! ms #(p/resolve! promise))
+    (p/then promise fn)))
+
+;; Playwright `isVisible` returns immediately, which leads to flaky tests
+;; So we rely on `count` which has auto-wait feature built-in
+(defn assert-visible [^js locator]
+  (after 20
+         #(p/let [count (.count locator)]
+            (t/is (> count 0)))))
+
+(defn assert-not-visible [^js locator]
+  (after 20
+         #(p/let [count (.count locator)]
+            (t/is (= count 0)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn get-question-elements [^js locatorizable] (.locator locatorizable "fieldset"))
 
 (defn as_seq [^js locator]
@@ -96,36 +116,29 @@
 
 (defn assert-submit-button-disabled [page disabled?]
   (let [submit-button (get-submit-button page)]
-    (p/then (.getAttribute submit-button "disabled")
-            #(t/is (= disabled? (boolean %))))))
+    (after 20
+           #(p/then (.getAttribute submit-button "disabled")
+                    (fn [attribute] (t/is (= disabled? (boolean attribute))))))))
 
 (defn assert-success-message-is-displayed [^js page]
-  (p/let [visible-success-message? (.isVisible (.locator page "role=status" #js {:hasText "gagné"}))]
-
-    (t/is (= true visible-success-message?))
-
-    page))
+  (p/then
+   (assert-visible (.locator page "role=status" #js {:hasText "gagné"}))
+   (constantly page)))
 
 (defn assert-success-message-is-not-displayed [^js page]
-  (p/let [visible-success-message? (.isVisible (.locator page "role=status" #js {:hasText "gagné"}))]
-
-    (t/is (= false visible-success-message?))
-
-    page))
+  (p/then
+   (assert-not-visible (.locator page "role=status" #js {:hasText "gagné"}))
+   (constantly page)))
 
 (defn assert-failure-message-is-displayed [^js page]
-  (p/let [visible-failure-message?  (.isVisible (.locator page "role=status" #js {:hasText "erreurs"}))]
-
-    (t/is (= true visible-failure-message?))
-
-    page))
+  (p/then
+   (assert-visible (.locator page "role=status" #js {:hasText "erreurs"}))
+   (constantly page)))
 
 (defn assert-failure-message-is-not-displayed [^js page]
-  (p/let [visible-failure-message?  (.isVisible (.locator page "role=status" #js {:hasText "erreurs"}))]
-
-    (t/is (= false visible-failure-message?))
-
-    page))
+  (p/then
+   (assert-not-visible (.locator page "role=status" #js {:hasText "erreurs"}))
+   (constantly page)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
