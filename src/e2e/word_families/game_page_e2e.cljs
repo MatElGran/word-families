@@ -98,8 +98,8 @@
 
 (defn check-radio-button [^js page [name value]]
   (-> page
-      (.locator (str " [name=\"" name "\"][value=\"" value "\"]"))
-      (.check #js {:force true})))
+      (.locator (str "input[name=" name "][value=" value "]"))
+      (.click #js {:force true})))
 
 (defn fill-form [page answers]
   (->
