@@ -38,7 +38,7 @@ jobs:
           path: /root/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright
       - name: Install playwright managed browsers
-        run: npx playwright install
+        run: npx playwright install chromium
       - name: Install playwright system deps
         run: sudo apt-get install libgbm1
       - run: npx shadow-cljs start
