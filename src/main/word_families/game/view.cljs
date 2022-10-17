@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :as rf]
    [word-families.game.events :as events]
-   [word-families.subs :as subs]))
+   [word-families.game.subs :as subs]))
 
 (defn- radio-button [props]
   [:input (merge props {:type "radio"})])
