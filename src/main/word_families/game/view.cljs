@@ -1,7 +1,7 @@
 (ns word-families.game.view
   (:require
    [re-frame.core :as rf]
-   [word-families.events :as events]
+   [word-families.game.events :as events]
    [word-families.subs :as subs]))
 
 (defn- radio-button [props]
