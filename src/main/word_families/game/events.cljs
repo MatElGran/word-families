@@ -1,16 +1,16 @@
 (ns word-families.game.events
   (:require
    [day8.re-frame.tracing :refer [fn-traced]]
-   [word-families.core :as core]
+   [word-families.lib :as lib]
    [word-families.db :as db]))
 
-(core/reg-event-db
+(lib/reg-event-db
  ::register-answer
  (fn-traced
   [db [_ groupable group]]
   (assoc-in db [::db/current-game ::db/answers groupable] group)))
 
-(core/reg-event-db
+(lib/reg-event-db
  ::validate-answers
  (fn-traced
   [db _]

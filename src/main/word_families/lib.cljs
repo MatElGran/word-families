@@ -1,4 +1,4 @@
-(ns word-families.core
+(ns word-families.lib
   (:require [re-frame.core :as rf]
             [word-families.config :as config]
             [word-families.db :as db]))
