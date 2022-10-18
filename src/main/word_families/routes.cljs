@@ -10,7 +10,8 @@
 
 (def ^:private routes
   (atom
-   ["/" {"" :home}]))
+   ["/" {"" :home
+         "settings" :settings}]))
 
 (defn- parse
   [url]

@@ -37,3 +37,15 @@
 
     (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
+
+(t/deftest settings-path-displays-settings-panel
+  (t/async
+   done
+   (->
+    (p/let [^js page (.newPage ^js @browser)]
+      (.goto page "http://localhost:8080/settings")
+      (p/let [actual-panel-id (.getAttribute (.locator page "#panel-root") "data-test-id")]
+        (t/is (= "settings-panel" actual-panel-id))))
+
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
+    (p/finally #(done)))))
