@@ -2,19 +2,9 @@
   (:require
    [clojure.spec.alpha :as s]
    [word-families.game.core :as game-core]
+   [word-families.settings.core :as settings-core]
    [word-families.game.db :as game]
    [word-families.settings.db :as settings]))
-
-(def default-groups [{::settings/name "Terre"
-                      ::settings/members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]}
-                     {::settings/name "Dent"
-                      ::settings/members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]}
-                     {::settings/name "Tourner"
-                      ::settings/members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]}
-                     {::settings/name "Cheval"
-                      ::settings/members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}
-                     {::settings/name "Autre"
-                      ::settings/members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
 
 (defn- group->answers [group]
   (let [group-name (::settings/name group)
@@ -34,10 +24,10 @@
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
-  [settings]
-  (let [groups (or (::settings/groups settings) default-groups)]
-    {::settings {::settings/groups groups}
-     ::current-game (new-game groups)
+  [user-settings]
+  (let [settings (settings-core/init user-settings)]
+    {::settings settings
+     ::current-game (new-game (::settings/groups settings))
      ;; FIXME: should be done according to path
      ::active-panel :home-panel}))
 
