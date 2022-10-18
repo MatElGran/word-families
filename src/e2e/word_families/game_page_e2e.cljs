@@ -1,11 +1,10 @@
 (ns word-families.game-page-e2e
-  (:require-macros [word-families.macros :as m])
   (:require
+   ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
    [promesa.exec :as exec]
-   ["playwright-core" :as pw]
-   [word-families.db :as db]))
+   [word-families.test-helpers :as test-helpers]))
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
@@ -28,16 +27,6 @@
                           #(println "Browser closed"))
                   (p/catch #(println "Error after suite: " (.-stack %)))
                   (p/finally #(done)))))})
-
-(defn load-settings [^js page]
-  (.addInitScript  page
-                  ;; FIXME: Map should be a param
-                   #(set! (.-settings js/window) (m/stringify {::db/groups [{::db/name "Terre"
-                                                                             ::db/members ["Enterrer" "Terrien"]}
-                                                                            {::db/name "Dent"
-                                                                             ::db/members ["Dentiste" "Dentelle"]}
-                                                                            {::db/name "Autre"
-                                                                             ::db/members ["Tourteau" "Terminer"]}]}))))
 
 (def correct-answers {"Enterrer" "Terre"
                       "Terrien" "Terre"
@@ -138,9 +127,9 @@
 (defn assert-errors-are-displayed [^js page errors]
   (p/then
    (p/all
-     (map
-       #(assert-visible (.locator page (str "[aria-invalid=true][name=" (get % 0) "][value=" (get % 1) "]")))
-       errors))
+    (map
+     #(assert-visible (.locator page (str "[aria-invalid=true][name=" (get % 0) "][value=" (get % 1) "]")))
+     errors))
    (constantly page)))
 
 (defn assert-no-errors-are-displayed [^js page]
@@ -159,7 +148,7 @@
      done
      (->
       (p/let [^js page (.newPage ^js @browser)]
-        (load-settings page)
+        (test-helpers/load-settings page)
         (.goto page "http://localhost:8080")
 
         (t/testing "elements"
@@ -184,7 +173,7 @@
    done
    (->
     (p/let [^js page (.newPage ^js @browser)]
-      (load-settings page)
+      (test-helpers/load-settings page)
       (.goto page "http://localhost:8080")
 
       (assert-submit-button-disabled  page true))
@@ -197,7 +186,7 @@
    done
    (->
     (p/let [^js page (.newPage ^js @browser)]
-      (load-settings page)
+      (test-helpers/load-settings page)
       (.goto page "http://localhost:8080")
 
       (p/->
@@ -212,7 +201,7 @@
    done
    (->
     (p/let [^js page (.newPage ^js @browser)]
-      (load-settings page)
+      (test-helpers/load-settings page)
       (.goto page "http://localhost:8080")
 
       (p/-> page
@@ -233,7 +222,7 @@
    done
    (->
     (p/let [^js page (.newPage ^js @browser)]
-      (load-settings page)
+      (test-helpers/load-settings page)
       (.goto page "http://localhost:8080")
 
       (p/-> page
@@ -254,7 +243,7 @@
    done
    (->
     (p/let [^js page (.newPage ^js @browser)]
-      (load-settings page)
+      (test-helpers/load-settings page)
       (.goto page "http://localhost:8080")
 
       (p/-> page

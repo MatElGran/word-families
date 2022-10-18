@@ -1,10 +1,9 @@
 (ns word-families.settings-page-e2e
-  (:require-macros [word-families.macros :as m])
   (:require
+   ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
-   ["playwright-core" :as pw]
-   [word-families.db :as db]))
+   [word-families.test-helpers :as test-helpers]))
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
@@ -28,16 +27,6 @@
                   (p/catch #(println "Error after suite: " (.-stack %)))
                   (p/finally #(done)))))})
 
-(defn load-settings [^js page]
-  (.addInitScript  page
-                  ;; FIXME: Map should be a param
-                   #(set! (.-settings js/window) (m/stringify {::db/groups [{::db/name "Terre"
-                                                                             ::db/members ["Enterrer" "Terrien"]}
-                                                                            {::db/name "Dent"
-                                                                             ::db/members ["Dentiste" "Dentelle"]}
-                                                                            {::db/name "Autre"
-                                                                             ::db/members ["Tourteau" "Terminer"]}]}))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-group-elements [^js locatorizable] (.locator locatorizable ".group"))
@@ -57,7 +46,7 @@
      done
      (->
       (p/let [^js page (.newPage ^js @browser)]
-        (load-settings page)
+        (test-helpers/load-settings page)
         (.goto page "http://localhost:8080/settings")
 
         (p/let [group-elements (get-group-elements page)
