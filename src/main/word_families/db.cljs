@@ -1,20 +1,22 @@
 (ns word-families.db
-  (:require [clojure.spec.alpha :as s]))
+  (:require
+   [clojure.spec.alpha :as s]
+   [word-families.settings.db :as settings]))
 
-(def default-groups [{::name "Terre"
-                      ::members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]}
-                     {::name "Dent"
-                      ::members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]}
-                     {::name "Tourner"
-                      ::members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]}
-                     {::name "Cheval"
-                      ::members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}
-                     {::name "Autre"
-                      ::members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
+(def default-groups [{::settings/name "Terre"
+                      ::settings/members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]}
+                     {::settings/name "Dent"
+                      ::settings/members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]}
+                     {::settings/name "Tourner"
+                      ::settings/members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]}
+                     {::settings/name "Cheval"
+                      ::settings/members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]}
+                     {::settings/name "Autre"
+                      ::settings/members ["Tourteau" "Terminer" "Chevelure" "Accident"]}])
 
 (defn- group->answers [group]
-  (let [group-name (::name group)
-        members (::members group)]
+  (let [group-name (::settings/name group)
+        members (::settings/members group)]
     (zipmap members (repeat group-name))))
 
 (defn- groups->answers [groups]
@@ -26,7 +28,7 @@
 
 (defn new-game [groups]
   (let [expected-answers (groups->answers groups)]
-    {::group-names (map ::name  groups)
+    {::group-names (map ::settings/name  groups)
      ::expected-answers expected-answers
      ::answers {}
      ::errors {}
@@ -35,21 +37,15 @@
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
   [settings]
-  (let [groups (or (::groups settings) default-groups)]
-    {::settings {::groups groups}
+  (let [groups (or (::settings/groups settings) default-groups)]
+    {::settings {::settings/groups groups}
      ::current-game (new-game groups)
      ;; FIXME: should be done according to path
      ::active-panel :home-panel}))
 
 (def answers-map? (s/map-of string? string?))
 
-(s/def ::name string?)
-(s/def ::members (s/coll-of string?))
-(s/def ::group (s/keys :req [::name ::members]))
-(s/def ::groups (s/coll-of ::group))
-(s/def ::settings (s/keys :req [::groups]))
-
-(s/def ::group-names (s/coll-of ::name))
+(s/def ::group-names (s/coll-of ::settings/name))
 (s/def ::expected-answers answers-map?)
 (s/def ::errors answers-map?)
 (s/def ::answers answers-map?)
@@ -60,6 +56,7 @@
                                     ::errors
                                     ::verified?]))
 
+(s/def ::settings ::settings/schema)
 (s/def ::active-panel keyword?)
 (s/def ::schema (s/keys :req [::active-panel ::current-game ::settings]))
 

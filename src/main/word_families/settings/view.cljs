@@ -1,7 +1,7 @@
 (ns word-families.settings.view
   (:require
    [re-frame.core :as rf]
-   [word-families.db :as db]
+   [word-families.settings.db :as db]
    [word-families.settings.subs :as subs]))
 
 (defn render []
