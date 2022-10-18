@@ -1,6 +1,7 @@
 (ns word-families.events
   (:require
    [day8.re-frame.tracing :refer [fn-traced]]
+   [word-families.core :as core]
    [word-families.lib :as lib]
    [word-families.db :as db]))
 
@@ -8,7 +9,7 @@
  ::initialize-db
  (fn-traced
   [_ [_ settings]]
-  (db/initial-db settings)))
+  (core/initial-db settings)))
 
 (lib/reg-event-fx
  ::navigate

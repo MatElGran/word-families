@@ -1,18 +1,8 @@
 (ns word-families.db
   (:require
    [clojure.spec.alpha :as s]
-   [word-families.settings.core :as settings-core]
    [word-families.game.db :as game]
    [word-families.settings.db :as settings]))
-
-;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
-(defn initial-db
-  [user-settings]
-  (let [settings (settings-core/init user-settings)]
-    {::settings settings
-     ::current-game (settings-core/new-random-game settings)
-     ;; FIXME: should be done according to path
-     ::active-panel :home-panel}))
 
 (s/def ::settings ::settings/schema)
 (s/def ::current-game ::game/schema)
