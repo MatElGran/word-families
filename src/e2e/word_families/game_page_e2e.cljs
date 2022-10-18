@@ -32,7 +32,7 @@
                       "Terrien" "Terre"
                       "Dentiste" "Dent"
                       "Dentelle" "Dent"
-                      "Tourteau" "Autre"
+                      "Accident" "Autre"
                       "Terminer" "Autre"})
 
 (def errors {"Enterrer" "Dent"
@@ -141,7 +141,7 @@
 
 ;; FIXME: run server with fixtures
 (t/deftest displays-game-form
-  (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Tourteau" "Terminer"}
+  (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Accident" "Terminer"}
         expected-answer-values #{"Terre" "Dent" "Autre"}]
 
     (t/async

@@ -39,8 +39,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; FIXME: run server with fixtures
-(t/deftest displays-game-form
-  (let [expected-groups #{"Terre" "Dent" "Autre"}]
+(t/deftest displays-group-list
+  (let [expected-groups #{"Terre" "Dent"}]
 
     (t/async
      done

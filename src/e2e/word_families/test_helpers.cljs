@@ -9,8 +9,8 @@
                    #(set! (.-settings js/window) (m/stringify
                                                   {::settings/groups
                                                    [{::settings/name "Terre"
-                                                     ::settings/members ["Enterrer" "Terrien"]}
+                                                     ::settings/members ["Enterrer" "Terrien"]
+                                                     ::settings/traps ["Terminer"]}
                                                     {::settings/name "Dent"
-                                                     ::settings/members ["Dentiste" "Dentelle"]}
-                                                    {::settings/name "Autre"
-                                                     ::settings/members ["Tourteau" "Terminer"]}]}))))
+                                                     ::settings/members ["Dentiste" "Dentelle"]
+                                                     ::settings/traps ["Accident"]}]}))))
