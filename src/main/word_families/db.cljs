@@ -1,6 +1,7 @@
 (ns word-families.db
   (:require
    [clojure.spec.alpha :as s]
+   [word-families.game.core :as game-core]
    [word-families.game.db :as game]
    [word-families.settings.db :as settings]))
 
@@ -29,11 +30,7 @@
 
 (defn new-game [groups]
   (let [expected-answers (groups->answers groups)]
-    {::game/group-names (map ::settings/name  groups)
-     ::game/expected-answers expected-answers
-     ::game/answers {}
-     ::game/errors {}
-     ::game/verified? false}))
+    (game-core/init expected-answers) ))
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
