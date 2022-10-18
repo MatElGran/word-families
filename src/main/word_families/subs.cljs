@@ -9,6 +9,11 @@
    (::db/current-game db)))
 
 (rf/reg-sub
+ ::settings
+ (fn [db]
+   (::db/settings db)))
+
+(rf/reg-sub
  ::active-panel
  (fn [db _]
    (::db/active-panel db)))

@@ -36,7 +36,10 @@
 (defn initial-db
   [settings]
   (let [groups (or (::groups settings) default-groups)]
-    {::current-game (new-game groups)}))
+    {::settings {::groups groups}
+     ::current-game (new-game groups)
+     ;; FIXME: should be done according to path
+     ::active-panel :home-panel}))
 
 (def answers-map? (s/map-of string? string?))
 
@@ -44,6 +47,8 @@
 (s/def ::members (s/coll-of string?))
 (s/def ::group (s/keys :req [::name ::members]))
 (s/def ::groups (s/coll-of ::group))
+(s/def ::settings (s/keys :req [::groups]))
+
 (s/def ::group-names (s/coll-of ::name))
 (s/def ::expected-answers answers-map?)
 (s/def ::errors answers-map?)
@@ -54,7 +59,9 @@
                                     ::answers
                                     ::errors
                                     ::verified?]))
-(s/def ::schema (s/keys :req [::current-game]))
+
+(s/def ::active-panel keyword?)
+(s/def ::schema (s/keys :req [::active-panel ::current-game ::settings]))
 
 (defn valid-schema?
   "validate the given db, writing any problems to console.error"
