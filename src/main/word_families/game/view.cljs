@@ -59,7 +59,8 @@
         errors @(rf/subscribe [::subs/errors])
         submit-disabled? (< (count answers)
                             (count current-groupables))]
-    [:<>
+    [:div#panel-root
+     {:data-test-id "game-panel"}
      [validation-message]
      [:form
       {:on-submit (fn [event]

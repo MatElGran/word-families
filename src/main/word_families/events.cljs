@@ -9,3 +9,15 @@
  (fn-traced
   [_ [_ settings]]
   (db/initial-db settings)))
+
+(lib/reg-event-fx
+ ::navigate
+ (fn-traced
+  [_ [_ handler]]
+  {:navigate handler}))
+
+(lib/reg-event-db
+ ::set-active-panel
+ (fn-traced
+  [db [_ active-panel]]
+  (assoc db ::db/active-panel active-panel)))

@@ -1,7 +1,13 @@
 (ns word-families.view
   (:require
-   [word-families.game.view :as game-view]))
+   [re-frame.core :as rf]
+   [word-families.game.view :as game-view]
+   [word-families.routes :as routes]
+   [word-families.subs :as subs]))
+
+(defmethod routes/panels :home-panel [] [game-view/render])
 
 (defn main-view
   []
-  (game-view/render))
+  (let [active-panel @(rf/subscribe [::subs/active-panel])]
+    (routes/panels active-panel)))

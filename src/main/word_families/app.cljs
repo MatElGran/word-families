@@ -4,6 +4,7 @@
             [word-families.view :as view]
             [word-families.events :as events]
             [word-families.config :as config]
+            [word-families.routes :as routes]
             [cljs.reader]))
 
 ;; init
@@ -23,6 +24,7 @@
     (rdom/render [view/main-view] root-el)))
 
 (defn init []
+  (routes/start!)
   (rf/dispatch-sync [::events/initialize-db (cljs.reader/read-string (.-settings js/window))])
   (dev-setup)
   (mount-root))

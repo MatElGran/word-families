@@ -7,3 +7,8 @@
  ::current-game
  (fn [db]
    (::db/current-game db)))
+
+(rf/reg-sub
+ ::active-panel
+ (fn [db _]
+   (::db/active-panel db)))
