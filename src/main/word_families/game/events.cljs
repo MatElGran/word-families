@@ -1,8 +1,8 @@
 (ns word-families.game.events
   (:require
    [day8.re-frame.tracing :refer [fn-traced]]
-   [word-families.lib :as lib]
-   [word-families.db :as db]))
+   [word-families.game.db :as db]
+   [word-families.lib :as lib]))
 
 (lib/reg-event-game
  ::register-answer

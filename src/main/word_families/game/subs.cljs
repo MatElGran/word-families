@@ -1,7 +1,7 @@
 (ns word-families.game.subs
   (:require
    [re-frame.core :as rf]
-   [word-families.db :as db]
+   [word-families.game.db :as db]
    [word-families.subs :as subs]))
 
 (rf/reg-sub

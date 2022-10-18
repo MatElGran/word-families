@@ -1,6 +1,7 @@
 (ns word-families.db
   (:require
    [clojure.spec.alpha :as s]
+   [word-families.game.db :as game]
    [word-families.settings.db :as settings]))
 
 (def default-groups [{::settings/name "Terre"
@@ -28,11 +29,11 @@
 
 (defn new-game [groups]
   (let [expected-answers (groups->answers groups)]
-    {::group-names (map ::settings/name  groups)
-     ::expected-answers expected-answers
-     ::answers {}
-     ::errors {}
-     ::verified? false}))
+    {::game/group-names (map ::settings/name  groups)
+     ::game/expected-answers expected-answers
+     ::game/answers {}
+     ::game/errors {}
+     ::game/verified? false}))
 
 ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
@@ -43,20 +44,8 @@
      ;; FIXME: should be done according to path
      ::active-panel :home-panel}))
 
-(def answers-map? (s/map-of string? string?))
-
-(s/def ::group-names (s/coll-of ::settings/name))
-(s/def ::expected-answers answers-map?)
-(s/def ::errors answers-map?)
-(s/def ::answers answers-map?)
-(s/def ::verified? boolean?)
-(s/def ::current-game (s/keys :req [::group-names
-                                    ::expected-answers
-                                    ::answers
-                                    ::errors
-                                    ::verified?]))
-
 (s/def ::settings ::settings/schema)
+(s/def ::current-game ::game/schema)
 (s/def ::active-panel keyword?)
 (s/def ::schema (s/keys :req [::active-panel ::current-game ::settings]))
 
