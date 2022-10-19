@@ -5,12 +5,17 @@
 
 (defn load-settings [^js page]
   (.addInitScript  page
-                    ;; FIXME: Map should be a param
-                   #(set! (.-settings js/window) (m/stringify
-                                                  {::settings/groups
-                                                   [{::settings/name "Terre"
-                                                     ::settings/members ["Enterrer" "Terrien"]
-                                                     ::settings/traps ["Terminer"]}
-                                                    {::settings/name "Dent"
-                                                     ::settings/members ["Dentiste" "Dentelle"]
-                                                     ::settings/traps ["Accident"]}]}))))
+                   #(let [settings (m/stringify
+                                   ;; FIXME: Map should be a param
+                                   {::settings/groups
+                                    [{::settings/name "Terre"
+                                      ::settings/members ["Enterrer" "Terrien"]
+                                      ::settings/traps ["Terminer"]}
+                                     {::settings/name "Dent"
+                                      ::settings/members ["Dentiste" "Dentelle"]
+                                      ::settings/traps ["Accident"]}]})]
+                     (try
+                       (.setItem (.-localStorage js/window) "settings" settings)
+                       (catch js/Error e
+                         ;; FIXME: report test error
+                         (println e))))))

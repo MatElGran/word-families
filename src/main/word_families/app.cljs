@@ -25,6 +25,6 @@
 
 (defn init []
   (routes/start!)
-  (rf/dispatch-sync [::events/initialize-db (cljs.reader/read-string (.-settings js/window))])
+  (rf/dispatch-sync [::events/initialize-db])
   (dev-setup)
   (mount-root))
