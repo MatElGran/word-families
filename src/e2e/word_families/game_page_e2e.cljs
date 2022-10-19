@@ -40,25 +40,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn after [ms fn]
-  (let [promise (p/deferred)]
-    (exec/schedule! ms #(p/resolve! promise))
-    (p/then promise fn)))
-
-;; Playwright `isVisible` returns immediately, which leads to flaky tests
-;; So we rely on `count` which has auto-wait feature built-in
-(defn assert-visible [^js locator]
-  (after 20
-         #(p/let [count (.count locator)]
-            (t/is (> count 0)))))
-
-(defn assert-not-visible [^js locator]
-  (after 20
-         #(p/let [count (.count locator)]
-            (t/is (= count 0)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn get-question-elements [^js locatorizable] (.locator locatorizable "fieldset"))
 
 (defn as_seq [^js locator]
@@ -100,41 +81,41 @@
 
 (defn assert-submit-button-disabled [page disabled?]
   (let [submit-button (get-submit-button page)]
-    (after 20
+    (test-helpers/after 20
            #(p/then (.getAttribute submit-button "disabled")
                     (fn [attribute] (t/is (= disabled? (boolean attribute))))))))
 
 (defn assert-success-message-is-displayed [^js page]
   (p/then
-   (assert-visible (.locator page "role=status" #js {:hasText "gagné"}))
+   (test-helpers/assert-visible (.locator page "role=status" #js {:hasText "gagné"}))
    (constantly page)))
 
 (defn assert-success-message-is-not-displayed [^js page]
   (p/then
-   (assert-not-visible (.locator page "role=status" #js {:hasText "gagné"}))
+   (test-helpers/assert-not-visible (.locator page "role=status" #js {:hasText "gagné"}))
    (constantly page)))
 
 (defn assert-failure-message-is-displayed [^js page]
   (p/then
-   (assert-visible (.locator page "role=status" #js {:hasText "erreurs"}))
+   (test-helpers/assert-visible (.locator page "role=status" #js {:hasText "erreurs"}))
    (constantly page)))
 
 (defn assert-failure-message-is-not-displayed [^js page]
   (p/then
-   (assert-not-visible (.locator page "role=status" #js {:hasText "erreurs"}))
+   (test-helpers/assert-not-visible (.locator page "role=status" #js {:hasText "erreurs"}))
    (constantly page)))
 
 (defn assert-errors-are-displayed [^js page errors]
   (p/then
    (p/all
     (map
-     #(assert-visible (.locator page (str "[aria-invalid=true][name=" (get % 0) "][value=" (get % 1) "]")))
+     #(test-helpers/assert-visible (.locator page (str "[aria-invalid=true][name=" (get % 0) "][value=" (get % 1) "]")))
      errors))
    (constantly page)))
 
 (defn assert-no-errors-are-displayed [^js page]
   (p/then
-   (assert-not-visible (.locator page "[aria-invalid=true]"))
+   (test-helpers/assert-not-visible (.locator page "[aria-invalid=true]"))
    (constantly page)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
