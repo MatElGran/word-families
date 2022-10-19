@@ -3,7 +3,8 @@
    ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
-   [word-families.test-helpers :as test-helpers]))
+   [word-families.test-helpers :as test-helpers]
+   [word-families.pages.settings :as page]))
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
@@ -27,14 +28,7 @@
                   (p/catch #(println "Error after suite: " (.-stack %)))
                   (p/finally #(done)))))})
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-group-elements [^js locatorizable] (.locator locatorizable ".group"))
-
-(defn collect-group-names [^js locatorizable]
-  (p/let [^js group-headers  (.locator locatorizable "h3")
-          group-names (.allInnerTexts group-headers)]
-    (into #{} group-names)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -49,8 +43,8 @@
         (test-helpers/load-settings page)
         (.goto page "http://localhost:8080/settings")
 
-        (p/let [group-elements (get-group-elements page)
-                actual-groups (collect-group-names group-elements)]
+        (p/let [group-elements (page/get-group-elements page)
+                actual-groups (page/collect-group-names group-elements)]
           (t/is (= expected-groups actual-groups))))
 
       (p/catch (fn [error] (t/do-report {:type :error :actual error})))
