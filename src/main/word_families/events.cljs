@@ -7,20 +7,27 @@
    [word-families.db :as db]
    [word-families.lib :as lib]))
 
+(def local-storage
+  (try
+    (.-localStorage js/window)
+    (catch js/Error _
+      nil)))
+
+(defn fetch-local-settings [storage]
+  (try
+    (-> storage
+        (.getItem "settings")
+        (reader/read-string))
+    (catch js/Error _
+      {})
+    ))
+
 (rf/reg-cofx
  ::local-settings
  (fn [cofx _]
-   (let [local-settings (try
-                          (-> js/window
-                              .-localStorage
-                              (.getItem "settings")
-                              (reader/read-string))
-
-                          (catch js/Errror e
-                            ;; FIXME:
-                            (println e)
-                            false))]
-     (assoc cofx :local-settings local-settings))))
+   (if local-storage
+     (assoc cofx :local-settings (fetch-local-settings local-storage))
+     cofx)))
 
 (lib/reg-event-fx
  ::initialize-db

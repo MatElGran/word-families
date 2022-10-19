@@ -1,5 +1,6 @@
 (ns word-families.settings.core
   (:require
+   [clojure.spec.alpha :as s]
    [word-families.game.core :as game]
    [word-families.settings.db :as db]))
 
@@ -17,7 +18,8 @@
                       ::db/traps ["Chevelure"]}])
 
 (defn init [user-settings]
-  (let [groups (or (::db/groups user-settings) default-groups)]
+  (let [valid-user-settings (if (s/valid? ::db/schema user-settings) user-settings {})
+        groups (or (::db/groups valid-user-settings) default-groups)]
     {::db/groups groups}))
 
 (defn- group->answers [group]
