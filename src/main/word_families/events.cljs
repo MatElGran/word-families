@@ -5,11 +5,11 @@
    [word-families.lib :as lib]
    [word-families.db :as db]))
 
-(lib/reg-event-db
+(lib/reg-event-fx
  ::initialize-db
  (fn-traced
   [_ [_ settings]]
-  (core/initial-db settings)))
+  {:db (core/initial-db settings)}))
 
 (lib/reg-event-fx
  ::navigate
