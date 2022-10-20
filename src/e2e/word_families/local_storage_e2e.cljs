@@ -1,4 +1,4 @@
-(ns local-storage-e2e
+(ns word-families.local-storage-e2e
   (:require-macros
    [word-families.macros :as m])
   (:require

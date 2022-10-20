@@ -1,4 +1,4 @@
-(ns routing-e2e
+(ns word-families.routing-e2e
   (:require
    [cljs.test :as t :refer-macros [use-fixtures]]
    ["playwright-core" :as pw]
