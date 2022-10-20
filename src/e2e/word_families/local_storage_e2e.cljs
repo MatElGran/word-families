@@ -1,6 +1,4 @@
 (ns word-families.local-storage-e2e
-  (:require-macros
-   [word-families.macros :as m])
   (:require
    ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
