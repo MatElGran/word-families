@@ -4,10 +4,18 @@
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
    [word-families.test-helpers :as test-helpers]
+   [word-families.settings.spec :as spec]
    [word-families.pages.settings :as page]))
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
+(def local-settings {::spec/groups
+                 [{::spec/name "Terre"
+                   ::spec/members ["Enterrer" "Terrien"]
+                   ::spec/traps ["Terminer"]}
+                  {::spec/name "Dent"
+                   ::spec/members ["Dentiste" "Dentelle"]
+                   ::spec/traps ["Accident"]}]})
 
 (use-fixtures :once
   {:before
@@ -56,32 +64,32 @@
 
 ;; FIXME: run server with fixtures
 (t/deftest displays-group-list
-  (let [expected-groups #{"Terre" "Dent"}]
+  (let [expected-group-names (into #{} (map ::spec/name (::spec/groups local-settings)))]
 
     (t/async
      done
      (->
       (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page)
+        (test-helpers/load-settings page local-settings)
         (.goto page "http://localhost:8080/settings")
 
         (p/let [group-elements (page/get-group-elements page)
                 actual-groups (page/collect-group-names group-elements)]
-          (t/is (= expected-groups actual-groups))))
+          (t/is (= expected-group-names actual-groups))))
 
       (p/catch (fn [error] (t/do-report {:type :error :actual error})))
       (p/finally #(done))))))
 
 (t/deftest user-can-delete-group
-  (let [groups ["Terre" "Dent"]
-        group-to-delete (first groups)
-        remaining-group (last groups)]
+  (let [group-names (map ::spec/name (::spec/groups local-settings))
+        group-to-delete (first group-names)
+        remaining-group (last group-names)]
 
     (t/async
      done
      (->
       (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page)
+        (test-helpers/load-settings page local-settings)
         (.goto page "http://localhost:8080/settings")
 
         (p/-> page
@@ -94,15 +102,15 @@
       (p/finally #(done))))))
 
 (t/deftest group-deletion-is-persisted-across-reloads
-  (let [groups ["Terre" "Dent"]
-        group-to-delete (first groups)
-        remaining-group (last groups)]
+  (let [group-names (map ::spec/name (::spec/groups local-settings))
+        group-to-delete (first group-names)
+        remaining-group (last group-names)]
 
     (t/async
      done
      (->
       (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page)
+        (test-helpers/load-settings page local-settings)
         (.goto page "http://localhost:8080/settings")
 
         (p/-> page
