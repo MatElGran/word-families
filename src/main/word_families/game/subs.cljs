@@ -1,32 +1,32 @@
 (ns word-families.game.subs
   (:require
    [re-frame.core :as rf]
-   [word-families.game.db :as db]
+   [word-families.game.spec :as spec]
    [word-families.subs :as subs]))
 
 (rf/reg-sub
  ::expected-answers
  :<- [::subs/current-game]
  (fn [game _]
-   (::db/expected-answers game)))
+   (::spec/expected-answers game)))
 
 (rf/reg-sub
  ::answers
  :<- [::subs/current-game]
  (fn [game _]
-   (::db/answers game)))
+   (::spec/answers game)))
 
 (rf/reg-sub
  ::errors
  :<- [::subs/current-game]
  (fn [game _]
-   (::db/errors game)))
+   (::spec/errors game)))
 
 (rf/reg-sub
  ::verified?
  :<- [::subs/current-game]
  (fn [game _]
-   (::db/verified? game)))
+   (::spec/verified? game)))
 
 (rf/reg-sub
  ::valid?
@@ -38,7 +38,7 @@
  ::current-game-group-names
  :<- [::subs/current-game]
  (fn [game _]
-   (::db/group-names game)))
+   (::spec/group-names game)))
 
 (rf/reg-sub
  ::current-game-groupables

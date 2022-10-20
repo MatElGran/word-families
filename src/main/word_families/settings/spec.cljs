@@ -1,4 +1,4 @@
-(ns word-families.settings.db
+(ns word-families.settings.spec
   (:require
    [clojure.spec.alpha :as s]))
 

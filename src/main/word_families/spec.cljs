@@ -1,8 +1,8 @@
-(ns word-families.db
+(ns word-families.spec
   (:require
    [clojure.spec.alpha :as s]
-   [word-families.game.db :as game]
-   [word-families.settings.db :as settings]))
+   [word-families.game.spec :as game]
+   [word-families.settings.spec :as settings]))
 
 (s/def ::settings ::settings/schema)
 (s/def ::current-game ::game/schema)

@@ -2,29 +2,29 @@
   (:require
    [clojure.spec.alpha :as s]
    [word-families.game.core :as game]
-   [word-families.settings.db :as db]))
+   [word-families.settings.spec :as spec]))
 
-(def default-groups [{::db/name "Terre"
-                      ::db/members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]
-                      ::db/traps ["Terminer"]}
-                     {::db/name "Dent"
-                      ::db/members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]
-                      ::db/traps ["Accident"]}
-                     {::db/name "Tourner"
-                      ::db/members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]
-                      ::db/traps ["Tourteau"]}
-                     {::db/name "Cheval"
-                      ::db/members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]
-                      ::db/traps ["Chevelure"]}])
+(def default-groups [{::spec/name "Terre"
+                      ::spec/members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]
+                      ::spec/traps ["Terminer"]}
+                     {::spec/name "Dent"
+                      ::spec/members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]
+                      ::spec/traps ["Accident"]}
+                     {::spec/name "Tourner"
+                      ::spec/members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]
+                      ::spec/traps ["Tourteau"]}
+                     {::spec/name "Cheval"
+                      ::spec/members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]
+                      ::spec/traps ["Chevelure"]}])
 
 (defn init [user-settings]
-  (let [valid-user-settings (if (s/valid? ::db/schema user-settings) user-settings {})
-        groups (or (::db/groups valid-user-settings) default-groups)]
-    {::db/groups groups}))
+  (let [valid-user-settings (if (s/valid? ::spec/schema user-settings) user-settings {})
+        groups (or (::spec/groups valid-user-settings) default-groups)]
+    {::spec/groups groups}))
 
 (defn- group->answers [group]
-  (let [group-name (::db/name group)
-        members (::db/members group)]
+  (let [group-name (::spec/name group)
+        members (::spec/members group)]
     (zipmap members (repeat group-name))))
 
 (defn- groups->answers [groups]
@@ -35,11 +35,11 @@
    groups))
 
 (defn- traps-virtual-group [groups]
-  {::db/name "Autre" ::db/members (flatten (map ::db/traps groups))})
+  {::spec/name "Autre" ::spec/members (flatten (map ::spec/traps groups))})
 
 (defn- expected-answers [groups]
   (let [groups (conj groups (traps-virtual-group groups))]
     (groups->answers groups)))
 
 (defn new-random-game [settings]
-  (game/init (expected-answers (::db/groups settings))))
+  (game/init (expected-answers (::spec/groups settings))))

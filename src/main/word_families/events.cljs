@@ -3,7 +3,7 @@
    [day8.re-frame.tracing :refer [fn-traced]]
    [re-frame.core :as rf]
    [word-families.core :as core]
-   [word-families.db :as db]
+   [word-families.spec :as spec]
    [word-families.lib :as lib]
    [word-families.local-storage :as local-storage]))
 
@@ -25,4 +25,4 @@
  ::set-active-panel
  (fn-traced
   [db [_ active-panel]]
-  (assoc db ::db/active-panel active-panel)))
+  (assoc db ::spec/active-panel active-panel)))

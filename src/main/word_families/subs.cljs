@@ -1,19 +1,19 @@
 (ns word-families.subs
   (:require
    [re-frame.core :as rf]
-   [word-families.db :as db]))
+   [word-families.spec :as spec]))
 
 (rf/reg-sub
  ::current-game
  (fn [db]
-   (::db/current-game db)))
+   (::spec/current-game db)))
 
 (rf/reg-sub
  ::settings
  (fn [db]
-   (::db/settings db)))
+   (::spec/settings db)))
 
 (rf/reg-sub
  ::active-panel
  (fn [db _]
-   (::db/active-panel db)))
+   (::spec/active-panel db)))

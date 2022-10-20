@@ -5,7 +5,7 @@
    [clojure.string :as str]
    [promesa.core :as p]
    [promesa.exec :as exec]
-   [word-families.settings.db :as settings]))
+   [word-families.settings.spec :as settings]))
 
 (defn render-init-script [local-settings]
   (let [template  (.toString (.readFileSync fs "resources/e2e/e2e_init_script.template.js"))

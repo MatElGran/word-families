@@ -2,10 +2,10 @@
   (:require
    [re-frame.core :as rf]
    [word-families.subs :as subs]
-   [word-families.settings.db :as db]))
+   [word-families.settings.spec :as spec]))
 
 (rf/reg-sub
  ::groups
  :<- [::subs/settings]
  (fn [settings]
-   (::db/groups settings)))
+   (::spec/groups settings)))

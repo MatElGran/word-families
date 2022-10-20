@@ -2,11 +2,11 @@
   (:require [re-frame.core :as rf]
             [word-families.config :as config]
             [word-families.local-storage :as local-storage]
-            [word-families.db :as db]))
+            [word-families.spec :as spec]))
 
 (def standard-interceptors
   [(when config/debug? rf/debug)
-   (when config/debug? (rf/after db/valid-schema?))])
+   (when config/debug? (rf/after spec/valid-schema?))])
 
 (defn reg-event-db
   ([id handler-fn]
@@ -18,7 +18,7 @@
 
 (def standard-interceptors-fx
   [(when config/debug?  rf/debug)
-   (when config/debug? (rf/after #(when % (db/valid-schema? %))))])
+   (when config/debug? (rf/after #(when % (spec/valid-schema? %))))])
 
 (defn reg-event-fx
   ([id handler-fn]
@@ -31,9 +31,9 @@
 (defn game-handler->db-handler
   [game-handler]
   (fn [db event]
-    (let [current-game (::db/current-game db)
+    (let [current-game (::spec/current-game db)
           new-game (game-handler current-game event)]
-      (assoc db ::db/current-game new-game))))
+      (assoc db ::spec/current-game new-game))))
 
 (defn reg-event-game
   ([id handler-fn]
@@ -47,9 +47,9 @@
   [persisted-settings-handler]
   (fn
     [{:keys [db]} event]
-    (let [old-settings (::db/settings db)
+    (let [old-settings (::spec/settings db)
           new-settings (persisted-settings-handler old-settings event)]
-      {:db  (assoc db ::db/settings new-settings)
+      {:db  (assoc db ::spec/settings new-settings)
        :fx [[::local-storage/persist-to-local-storage new-settings]]})))
 
 (defn reg-event-persisted-settings
