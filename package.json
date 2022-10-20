@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "outdated": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
-    "watch": "shadow-cljs watch app browser-test",
+    "dev": "shadow-cljs watch app browser-test e2e-test",
     "test": "shadow-cljs compile karma-test && karma start --single-run",
-    "e2e": "shadow-cljs compile e2e-test && node target/e2e-test.js",
+    "e2e": "node target/e2e-test.js",
     "release": "shadow-cljs release app",
     "build-report": "shadow-cljs run shadow.cljs.build-report app target/build-report.html"
   },

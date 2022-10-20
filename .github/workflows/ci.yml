@@ -14,8 +14,10 @@ jobs:
         with:
           node-version: '14'
           cache: 'npm'
-      - run: npm ci
-      - uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
+      - name: Install node deps
+        run: npm ci
+      - name: Run tests
+        uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
         with:
           run: npm run test
   run-e2e-test:
@@ -31,7 +33,8 @@ jobs:
         with:
           node-version: '14'
           cache: npm
-      - run: npm ci
+      - name: Install node deps
+        run: npm ci
       - name: Cache local playwright cache
         uses: actions/cache@v3
         with:
@@ -41,8 +44,13 @@ jobs:
         run: npx playwright install chromium
       - name: Install playwright system deps
         run: sudo apt-get install libgbm1
-      - run: npx shadow-cljs start
-      - run: npm run release
-      - uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
+      - name: Start shadow-cljs server
+        run: npx shadow-cljs start
+      - name: Compile application
+        run: npm run release
+      - name: Compile E2E tests
+        run: npx shadow-cljs compile e2e-test
+      - name: Run E2E tests
+        uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
         with:
           run: npm run e2e
