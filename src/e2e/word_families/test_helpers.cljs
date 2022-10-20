@@ -1,33 +1,40 @@
 (ns word-families.test-helpers
-  (:require-macros [word-families.macros :as m])
   (:require
+   ["fs" :as fs]
    [cljs.test :as t]
+   [clojure.string :as str]
    [promesa.core :as p]
    [promesa.exec :as exec]
    [word-families.settings.db :as settings]))
 
-(defn load-settings [^js page]
-  (.addInitScript page #js {:path "resources/e2e/e2e_init_script.js"}))
+(defn render-init-script [local-settings]
+  (let [template  (.toString (.readFileSync fs "resources/e2e/e2e_init_script.template.js"))
+        data (str/replace template "$PLACEHOLDER" local-settings)
+        output-path "public/js/e2e_init_script.js"]
+    (.writeFileSync fs output-path data)
+    output-path))
+
+(def test-default-settings {::settings/groups
+                            [{::settings/name "Terre"
+                              ::settings/members ["Enterrer" "Terrien"]
+                              ::settings/traps ["Terminer"]}
+                             {::settings/name "Dent"
+                              ::settings/members ["Dentiste" "Dentelle"]
+                              ::settings/traps ["Accident"]}]})
+
+(defn load-settings
+  ([^js page]
+   (load-settings page (pr-str test-default-settings)))
+
+  ([^js page local-settings]
+   (let [script-path (render-init-script local-settings)]
+     (.addInitScript page #js {:path script-path}))))
 
 (defn load-settings-invalid-edn [^js page]
-  (.addInitScript
-   page
-   #(let [settings "{"]
-      (try
-        (.setItem (.-localStorage js/window) "settings" settings)
-        (catch js/Error e
-          ;; FIXME: report test error
-          (println e))))))
+  (load-settings page "{"))
 
 (defn load-settings-invalid-schema [^js page]
-  (.addInitScript
-   page
-   #(try
-      (let [settings (m/stringify {::settings/groups [{:name "Terre"}]})]
-        (.setItem (.-localStorage js/window) "settings" settings))
-      (catch js/Error e
-        ;; FIXME: report test error
-        (println e)))))
+  (load-settings page (pr-str {::settings/groups [{:name "Terre"}]})))
 
 (defn after [ms fn]
   (let [promise (p/deferred)]

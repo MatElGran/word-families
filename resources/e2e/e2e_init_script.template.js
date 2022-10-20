@@ -1,4 +1,4 @@
-const settings = `{:word-families.settings.db/groups [{:word-families.settings.db/name "Terre" :word-families.settings.db/members ["Enterrer" "Terrien"] :word-families.settings.db/traps ["Terminer"]} {:word-families.settings.db/name "Dent" :word-families.settings.db/members ["Dentiste" "Dentelle"] :word-families.settings.db/traps ["Accident"]}]}`;
+const settings = `$PLACEHOLDER`;
 
 try {
   // Tests for localStorage persistence rely on page reloading, upon which
