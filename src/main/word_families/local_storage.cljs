@@ -17,9 +17,23 @@
     (catch js/Error _
       {})))
 
+(defn save-local-settings [storage settings]
+  (try
+    (.setItem storage "settings" (pr-str settings))
+    true
+    (catch js/Error _
+      false)))
+
 (rf/reg-cofx
  ::local-settings
  (fn [cofx _]
    (if local-storage
      (assoc cofx :local-settings (fetch-local-settings local-storage))
      cofx)))
+
+(rf/reg-fx
+ ::persist-to-local-storage
+ (fn
+   [settings]
+   (when local-storage
+     (save-local-settings local-storage settings))))

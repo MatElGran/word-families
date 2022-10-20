@@ -36,6 +36,10 @@
 (defn load-settings-invalid-schema [^js page]
   (load-settings page (pr-str {::settings/groups [{:name "Terre"}]})))
 
+(defn reload-page [^js page]
+  (p/then (.reload page)
+          (constantly page)))
+
 (defn after [ms fn]
   (let [promise (p/deferred)]
     (exec/schedule! ms #(p/resolve! promise))
