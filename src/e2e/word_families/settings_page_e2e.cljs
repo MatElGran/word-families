@@ -41,7 +41,7 @@
 (defn assert-each-group-has-a-delete-button [^js page]
   (p/let [group-elements (page/get-group-elements page)
           group-count (.count group-elements)
-          delete-buttons (page/get-delete-buttons group-elements)
+          delete-buttons (page/get-delete-group-buttons group-elements)
           delete-button-count (.count delete-buttons)]
     (t/is (= group-count delete-button-count))
     page))
@@ -92,7 +92,7 @@
 
         (p/-> page
               (assert-each-group-has-a-delete-button)
-              (page/click-delete-button group-to-delete)
+              (page/click-delete-group-button group-to-delete)
               (assert-group-is-not-visible group-to-delete)
               (assert-group-is-visible remaining-group)))
 
@@ -111,7 +111,7 @@
         (.goto page "http://localhost:8080/settings")
 
         (p/-> page
-              (page/click-delete-button group-to-delete)
+              (page/click-delete-group-button group-to-delete)
               (test-helpers/reload-page)
               (assert-group-is-not-visible group-to-delete)
               (assert-group-is-visible remaining-group)))

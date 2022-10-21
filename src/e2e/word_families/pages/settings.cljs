@@ -3,7 +3,7 @@
    [promesa.core :as p]))
 
 (defn get-group-elements [^js locatorizable] (.locator locatorizable ".group"))
-(defn get-delete-buttons [^js locatorizable] (.locator locatorizable "button" #js {:hasText "Supprimer"}))
+(defn get-delete-group-buttons [^js locatorizable] (.locator locatorizable "button" #js {:hasText "Supprimer"}))
 
 (defn collect-group-names [^js locatorizable]
   (p/let [^js group-headers  (.locator locatorizable "h3")
@@ -12,10 +12,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn click-delete-button [^js page group-name]
+(defn click-delete-group-button [^js page group-name]
   (p/let [group-elements (get-group-elements page)
           group-element (.filter group-elements #js {:hasText group-name})
-          delete-button (get-delete-buttons group-element)]
-      (p/then (.click delete-button)
-              (constantly page))
-      ))
+          delete-button (get-delete-group-buttons group-element)]
+    (p/then (.click delete-button)
+            (constantly page))))
