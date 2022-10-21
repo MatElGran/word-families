@@ -38,7 +38,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
+    (p/let [^js page (test-helpers/get-new-page ^js @browser)]
       (.goto page "http://localhost:8080/settings")
 
       (p/let [group-elements (page/get-group-elements page)
@@ -52,8 +52,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings-invalid-edn page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser "{")]
       (.goto page "http://localhost:8080/settings")
 
       (p/let [group-elements (page/get-group-elements page)
@@ -67,8 +66,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings-invalid-schema page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser {::settings-spec/groups [{:name "Terre"}]})]
       (.goto page "http://localhost:8080/settings")
 
       (p/let [group-elements (page/get-group-elements page)

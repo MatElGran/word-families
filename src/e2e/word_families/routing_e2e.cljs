@@ -1,8 +1,9 @@
 (ns word-families.routing-e2e
   (:require
-   [cljs.test :as t :refer-macros [use-fixtures]]
    ["playwright-core" :as pw]
-   [promesa.core :as p]))
+   [cljs.test :as t :refer-macros [use-fixtures]]
+   [promesa.core :as p]
+   [word-families.test-helpers :as test-helpers]))
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
@@ -30,7 +31,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
+    (p/let [^js page (test-helpers/get-new-page ^js @browser)]
       (.goto page "http://localhost:8080")
       (p/let [actual-panel-id (.getAttribute (.locator page "#panel-root") "data-test-id")]
         (t/is (= "game-panel" actual-panel-id))))
@@ -42,7 +43,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
+    (p/let [^js page (test-helpers/get-new-page ^js @browser)]
       (.goto page "http://localhost:8080/settings")
       (p/let [actual-panel-id (.getAttribute (.locator page "#panel-root") "data-test-id")]
         (t/is (= "settings-panel" actual-panel-id))))

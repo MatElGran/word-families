@@ -69,8 +69,7 @@
     (t/async
      done
      (->
-      (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page local-settings)
+      (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
         (.goto page "http://localhost:8080/settings")
 
         (p/let [group-elements (page/get-group-elements page)
@@ -88,8 +87,7 @@
     (t/async
      done
      (->
-      (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page local-settings)
+      (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
         (.goto page "http://localhost:8080/settings")
 
         (p/-> page
@@ -109,8 +107,7 @@
     (t/async
      done
      (->
-      (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page local-settings)
+      (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
         (.goto page "http://localhost:8080/settings")
 
         (p/-> page

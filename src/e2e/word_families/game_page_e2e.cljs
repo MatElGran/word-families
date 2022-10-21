@@ -3,11 +3,19 @@
    ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
-   [promesa.exec :as exec]
+   [word-families.settings.spec :as spec]
    [word-families.test-helpers :as test-helpers]))
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
+
+(def local-settings {::spec/groups
+                     [{::spec/name "Terre"
+                       ::spec/members ["Enterrer" "Terrien"]
+                       ::spec/traps ["Terminer"]}
+                      {::spec/name "Dent"
+                       ::spec/members ["Dentiste" "Dentelle"]
+                       ::spec/traps ["Accident"]}]})
 
 (use-fixtures :once
   {:before
@@ -128,8 +136,7 @@
     (t/async
      done
      (->
-      (p/let [^js page (.newPage ^js @browser)]
-        (test-helpers/load-settings page)
+      (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
         (.goto page "http://localhost:8080")
 
         (t/testing "elements"
@@ -153,8 +160,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
       (.goto page "http://localhost:8080")
 
       (assert-submit-button-disabled  page true))
@@ -166,8 +172,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
       (.goto page "http://localhost:8080")
 
       (p/->
@@ -181,8 +186,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser , local-settings)]
       (.goto page "http://localhost:8080")
 
       (p/-> page
@@ -202,8 +206,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
       (.goto page "http://localhost:8080")
 
       (p/-> page
@@ -223,8 +226,7 @@
   (t/async
    done
    (->
-    (p/let [^js page (.newPage ^js @browser)]
-      (test-helpers/load-settings page)
+    (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
       (.goto page "http://localhost:8080")
 
       (p/-> page

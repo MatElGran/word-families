@@ -9,7 +9,10 @@
 
 (defn render-init-script [local-settings]
   (let [template  (.toString (.readFileSync fs "resources/e2e/e2e_init_script.template.js"))
-        data (str/replace template "$PLACEHOLDER" local-settings)
+        settings (if (string? local-settings)
+                   local-settings
+                   (pr-str local-settings))
+        data (str/replace template "$PLACEHOLDER" settings)
         output-path "public/js/e2e_init_script.js"]
     (.writeFileSync fs output-path data)
     output-path))
@@ -30,11 +33,14 @@
    (let [script-path (render-init-script local-settings)]
      (.addInitScript page #js {:path script-path}))))
 
-(defn load-settings-invalid-edn [^js page]
-  (load-settings page "{"))
-
-(defn load-settings-invalid-schema [^js page]
-  (load-settings page (pr-str {::settings/groups [{:name "Terre"}]})))
+(defn get-new-page
+  ([^js browser]
+   (p/let [^js page (.newPage browser)]
+     page))
+  ([^js browser local-settings]
+   (p/let [^js page (get-new-page browser)]
+     (load-settings page local-settings)
+     page)))
 
 (defn reload-page [^js page]
   (p/then (.reload page)
