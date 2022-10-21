@@ -36,6 +36,7 @@
 (defn get-new-page
   ([^js browser]
    (p/let [^js page (.newPage browser)]
+     (.addInitScript page #js {:path "resources/e2e/disable_re_frame_10x.js" })
      page))
   ([^js browser local-settings]
    (p/let [^js page (get-new-page browser)]
