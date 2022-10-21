@@ -17,18 +17,7 @@
     (.writeFileSync fs output-path data)
     output-path))
 
-(def test-default-settings {::settings/groups
-                            [{::settings/name "Terre"
-                              ::settings/members ["Enterrer" "Terrien"]
-                              ::settings/traps ["Terminer"]}
-                             {::settings/name "Dent"
-                              ::settings/members ["Dentiste" "Dentelle"]
-                              ::settings/traps ["Accident"]}]})
-
 (defn load-settings
-  ([^js page]
-   (load-settings page (pr-str test-default-settings)))
-
   ([^js page local-settings]
    (let [script-path (render-init-script local-settings)]
      (.addInitScript page #js {:path script-path}))))
