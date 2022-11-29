@@ -1,1 +1,1 @@
-{"author":{"id":"deb57507ea45c0bb7f98b0ab636b3773a489535cb9e2393c17fe41c68dca563e"},"ops":[{"type":4,"timestamp":1669716296,"nonce":"xUHXuwlf61SgH86NhuJVUkogxno=","status":2},{"type":4,"timestamp":1669716298,"nonce":"lcInPb4ONvKGPEWs/vYDZqbB4QU=","status":1}]}
+{"author":{"id":"deb57507ea45c0bb7f98b0ab636b3773a489535cb9e2393c17fe41c68dca563e"},"ops":[{"type":2,"timestamp":1669716397,"nonce":"rsYpefMy1jMDI3MjQMxz/dMvfZY=","title":"Game deck: Add spacing between groups and groupables for mobile size","was":"Add more spacing between groups and groupables for mobile size"}]}
