@@ -1,0 +1,1 @@
+{"author":{"id":"deb57507ea45c0bb7f98b0ab636b3773a489535cb9e2393c17fe41c68dca563e"},"ops":[{"type":1,"timestamp":1669836235,"nonce":"twSPPfhVMtT/4kn1XwiZ7Jr6ZJU=","title":"Navigation: Clean up state changes on navigation","message":"Do not load a game until navigation to the deck\nClean up game when leaving the deck\nClean un form when leaving setting","files":null}]}
