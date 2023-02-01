@@ -23,7 +23,12 @@
     (rdom/unmount-component-at-node root-el)
     (rdom/render [view/main-view] root-el)))
 
+(defn- debug-logger [& args]
+  (when config/debug?
+    (.debug js/console "Debug: " (apply str args))))
+
 (defn init []
+  (rf/set-loggers! {:debug debug-logger})
   (routes/start!)
   (rf/dispatch-sync [::events/initialize-db])
   (dev-setup)
