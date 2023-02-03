@@ -1,0 +1,16 @@
+nav {
+  padding: var(--space-m-l) var(--space-l-xl);
+  background-color: var(--color-primary);
+  box-shadow: 0 1px 3px  var(--color-grey-700);
+  margin-block-end: var(--space-l-xl);
+}
+
+nav a {
+  background-color: var(--color-grey-100);
+  color: var(--color-primary-900);
+  font-weight: 600;
+  font-size: var(--step-1);
+  padding: var(--space-xs);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+}

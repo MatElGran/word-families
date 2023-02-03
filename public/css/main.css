@@ -3,24 +3,10 @@
 @import "layout/cover.css";
 @import "layout/stack.css";
 @import "layout/switcher.css";
+@import "components/inputs.css";
 @import "components/button.css";
-
-nav {
-  padding: var(--space-m-l) var(--space-l-xl);
-  background-color: var(--color-primary);
-  box-shadow: 0 1px 3px var(--color-grey-700);
-  margin-block-end: var(--space-l-xl);
-}
-
-nav a {
-  background-color: var(--color-grey-100);
-  color: var(--color-primary-900);
-  font-weight: 600;
-  font-size: var(--step-1);
-  padding: var(--space-xs);
-  border-radius: var(--border-radius);
-  text-decoration: none;
-}
+@import "components/nav.css";
+@import "components/modal.css";
 
 .rounded {
   border-radius: var(--border-radius);
@@ -37,22 +23,6 @@ nav a {
 .verified .correct {
   opacity: 0.5;
   cursor: not-allowed !important;
-}
-
-.modal-overlay {
-  position: fixed;
-  inset-inline: 0;
-  inset-block: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, .5);
-}
-
-.modal-overlay>.modal {
-  overflow-y: auto;
-  border-radius: var(--border-radius);
 }
 
 /* Components */
@@ -94,6 +64,7 @@ nav a {
 :is(.group-cards, .groupable-cards) .box {
   --border-color: var(--box-background-color);
   --border-width: 1rem;
+  --box-padding: var(--space-m-l);
   border-width: 1rem;
   border-style: solid;
   border-color: var(--card-color, var(--border-color));
@@ -129,8 +100,8 @@ nav a {
   --stack-spacing: var(--space-3xl);
 }
 
-.setting-item>header>button:first-of-type {
-  margin-inline-start: auto;
+.group-settings>label+ :is(input, textarea) {
+  --stack-spacing: var(--space-s);
 }
 
 footer.actions {
