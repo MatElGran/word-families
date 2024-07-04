@@ -15,5 +15,13 @@
 
 (rf/reg-sub
  ::active-panel
+ :<- [::route]
+ (fn [route]
+   (if (nil? (:handler route))
+     :default-panel
+     (keyword (str (name (:handler route)) "-panel")))))
+
+(rf/reg-sub
+ ::route
  (fn [db _]
-   (::spec/active-panel db)))
+   (::spec/route db)))

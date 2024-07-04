@@ -33,8 +33,7 @@
   (let [path (-> js/window
                  .-location
                  .-pathname)
-        route (routes/parse path)
-        active-panel (keyword (str (name (:handler route)) "-panel"))]
-    (rf/dispatch-sync [::events/initialize-db active-panel])
+        route (routes/parse path)]
+    (rf/dispatch-sync [::events/initialize-db route])
     (dev-setup)
     (mount-root)))

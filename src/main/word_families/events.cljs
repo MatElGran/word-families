@@ -12,9 +12,9 @@
  ::initialize-db
  [(rf/inject-cofx ::local-storage/local-settings)]
  (fn-traced
-  [cofx [_ active-panel]]
+  [cofx [_ route]]
   (let [local-settings (:local-settings cofx)]
-    {:db (core/initial-db local-settings active-panel)})))
+    {:db (core/initial-db local-settings route)})))
 
 (lib/reg-event-fx
  ::start-new-game
@@ -33,11 +33,11 @@
 (lib/reg-event-fx
  ::navigate
  (fn-traced
-  [_ [_ handler]]
+  [{:keys [db]}  [_ handler]]
   {:navigate handler}))
 
 (lib/reg-event-db
- ::set-active-panel
+ ::visit
  (fn-traced
-  [db [_ active-panel]]
-  (assoc db ::spec/active-panel active-panel)))
+  [db [_ route]]
+  (assoc db ::spec/route route)))

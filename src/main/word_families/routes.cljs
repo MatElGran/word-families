@@ -12,7 +12,8 @@
   (atom
    ["/" {"" :home
          "game" :game
-         "settings" :settings}]))
+         "settings" :settings
+         ["import/" :id] :import}]))
 
 (defn parse
   [url]
@@ -24,8 +25,8 @@
 
 (defn- dispatch
   [route]
-  (let [panel (keyword (str (name (:handler route)) "-panel"))]
-    (rf/dispatch [::events/set-active-panel panel])))
+  (let [_ (.log js/console "Navigating to" route)]
+    (rf/dispatch [::events/visit route])))
 
 (defonce ^:private history
   (pushy/pushy dispatch parse))

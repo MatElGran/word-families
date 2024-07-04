@@ -7,8 +7,8 @@
 
 (s/def ::settings ::settings/schema)
 (s/def ::current-game ::game/schema)
-(s/def ::active-panel keyword?)
-(s/def ::schema (s/keys :req [::active-panel  ::settings]
+;; FIXME: define route spec and add it to required schema keys
+(s/def ::schema (s/keys :req [::settings]
                         :opt [::current-game]))
 
 (defn valid-schema?
