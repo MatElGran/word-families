@@ -33,7 +33,7 @@
 (lib/reg-event-fx
  ::navigate
  (fn-traced
-  [{:keys [db]}  [_ handler]]
+  [_  [_ handler]]
   {:navigate handler}))
 
 (lib/reg-event-db

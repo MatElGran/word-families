@@ -1,7 +1,4 @@
-(ns word-families.components.inputs
-  (:require
-   [clojure.string :as str]
-   [reagent.core :as reagent]))
+(ns word-families.components.inputs)
 
 (defn radio-button [props]
   [:input (merge props {:type "radio"})])

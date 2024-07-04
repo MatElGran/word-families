@@ -5,15 +5,12 @@
    [re-frame.core :as rf]
    [word-families.events :as events]))
 
-(defmulti panels identity)
-(defmethod panels :default [] [:div "No panel found for this route."])
-
 (def ^:private routes
   (atom
    ["/" {"" :home
          "game" :game
          "settings" :settings
-         ["import/" :id] :import}]))
+         true :not-found}]))
 
 (defn parse
   [url]
@@ -25,14 +22,15 @@
 
 (defn- dispatch
   [route]
-  (let [_ (.log js/console "Navigating to" route)]
-    (rf/dispatch [::events/visit route])))
+  (rf/console :debug "Dispatching" route)
+  (rf/dispatch [::events/visit route]))
 
 (defonce ^:private history
   (pushy/pushy dispatch parse))
 
 (defn- navigate!
   [handler]
+  (rf/console :debug "Navigating to" handler)
   (pushy/set-token! history (url-for handler)))
 
 (defn start!

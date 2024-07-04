@@ -4,14 +4,20 @@
    [word-families.home.view :as home]
    [word-families.game.view :as game]
    [word-families.settings.view :as settings]
-   [word-families.routes :as routes]
    [word-families.subs :as subs]))
 
-(defmethod routes/panels :home-panel [] [home/render])
-(defmethod routes/panels :game-panel [] [game/render])
-(defmethod routes/panels :settings-panel [] [settings/render])
+;; FIXME: Style this
+(def not-found [:div "No panel found for this route."])
+
+(defmulti view :handler)
+;; NOTE: This should not happen as there is a catch-all clause on handler selection.
+(defmethod view nil [_route] not-found)
+(defmethod view :not-found [_route] not-found)
+(defmethod view :home [_route] [home/render])
+(defmethod view :game [_route] [game/render])
+(defmethod view :settings [_route] [settings/render])
 
 (defn main-view
   []
-  (let [active-panel @(rf/subscribe [::subs/active-panel])]
-    (routes/panels active-panel)))
+  (let [route @(rf/subscribe [::subs/route])]
+    (view route)))
