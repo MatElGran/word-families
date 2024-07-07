@@ -17,7 +17,7 @@ jobs:
       - name: Install node deps
         run: npm ci
       - name: Run tests
-        uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
+        uses: coactions/setup-xvfb@v1
         with:
           run: npm run test
   run-e2e-test:
@@ -51,6 +51,6 @@ jobs:
       - name: Compile E2E tests
         run: npx shadow-cljs compile e2e-test
       - name: Run E2E tests
-        uses: GabrielBB/xvfb-action@36f535812f1bd7e367d9fc8be6eb55502c47db26
+        uses: coactions/setup-xvfb@v1
         with:
           run: npm run e2e
