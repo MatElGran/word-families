@@ -1,0 +1,110 @@
+:root {
+  --color-grey-100: #fefefe;
+  --color-grey-200: #ededed;
+  --color-grey-300: #cacaca;
+  --color-grey-500: #ababab;
+  --color-grey-600: #959595;
+  --color-grey-700: #757575;
+  --color-grey-800: #5e5e5e;
+  --color-grey-900: #434343;
+
+  --color-red-100: #fceae6;
+  --color-red-200: #f5c1b4;
+  --color-red-300: #ef9881;
+  --color-red-400: #e86f4f;
+  --color-red-500: #e2461d;
+  --color-red-600: #b03717;
+  --color-red-700: #7e2710;
+  --color-red-800: #4b170a;
+  --color-red-900: #190803;
+
+  --color-green-100: #f4f8e9;
+  --color-green-200: #ddebbe;
+  --color-green-300: #c7de92;
+  --color-green-400: #b0d166;
+  --color-green-500: #9ac43b;
+  --color-green-600: #78992e;
+  --color-green-700: #556d21;
+  --color-green-800: #334114;
+  --color-green-900: #111607;
+
+  --color-purple-100: #f9e3fe;
+  --color-purple-200: #edacfd;
+  --color-purple-300: #e275fb;
+  --color-purple-400: #d63efa;
+  --color-purple-500: #ca07f8;
+  --color-purple-600: #9d05c1;
+  --color-purple-700: #70048a;
+  --color-purple-800: #430253;
+  --color-purple-900: #16011c;
+
+  --color-yellow-100: #fffbe3;
+  --color-yellow-200: #fef4ab;
+  --color-yellow-300: #fdec73;
+  --color-yellow-400: #fde53b;
+  --color-yellow-500: #fcdd03;
+  --color-yellow-600: #c4ac02;
+  --color-yellow-700: #8c7b02;
+  --color-yellow-800: #544a01;
+  --color-yellow-900: #1c1900;
+
+  --color-blue-100: #e6f5fc;
+  --color-blue-200: #b3e2f6;
+  --color-blue-300: #81cef0;
+  --color-blue-400: #4ebbe9;
+  --color-blue-500: #1ca8e3;
+  --color-blue-600: #1682b1;
+  --color-blue-700: #0f5d7e;
+  --color-blue-800: #09384c;
+  --color-blue-900: #031319;
+
+  --color-primary-100: var(--color-green-100);
+  --color-primary-200: var(--color-green-200);
+  --color-primary-300: var(--color-green-300);
+  --color-primary-400: var(--color-green-400);
+  --color-primary-500: var(--color-green-500);
+  --color-primary-600: var(--color-green-600);
+  --color-primary-700: var(--color-green-700);
+  --color-primary-800: var(--color-green-800);
+  --color-primary-900: var(--color-green-900);
+
+  --color-primary: var(--color-primary-500);
+}
+
+/* @link https://utopia.fyi/type/calculator?c=320,14,1.2,1140,16,1.2,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
+:root {
+  --step--2: clamp(0.61rem, calc(0.57rem + 0.17vw), 0.69rem);
+  --step--1: clamp(0.73rem, calc(0.69rem + 0.20vw), 0.83rem);
+  --step-0: clamp(0.88rem, calc(0.83rem + 0.24vw), 1.00rem);
+  --step-1: clamp(1.05rem, calc(0.99rem + 0.29vw), 1.20rem);
+  --step-2: clamp(1.26rem, calc(1.19rem + 0.35vw), 1.44rem);
+  --step-3: clamp(1.51rem, calc(1.43rem + 0.42vw), 1.73rem);
+  --step-4: clamp(1.81rem, calc(1.71rem + 0.51vw), 2.07rem);
+  --step-5: clamp(2.18rem, calc(2.06rem + 0.61vw), 2.49rem);
+}
+
+/* @link https://utopia.fyi/space/calculator?c=320,14,1.2,1140,16,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
+:root {
+  --space-3xs: clamp(0.25rem, calc(0.25rem + 0.00vw), 0.25rem);
+  --space-2xs: clamp(0.44rem, calc(0.41rem + 0.12vw), 0.50rem);
+  --space-xs: clamp(0.69rem, calc(0.66rem + 0.12vw), 0.75rem);
+  --space-s: clamp(0.88rem, calc(0.83rem + 0.24vw), 1.00rem);
+  --space-m: clamp(1.31rem, calc(1.24rem + 0.37vw), 1.50rem);
+  --space-l: clamp(1.75rem, calc(1.65rem + 0.49vw), 2.00rem);
+  --space-xl: clamp(2.63rem, calc(2.48rem + 0.73vw), 3.00rem);
+  --space-2xl: clamp(3.50rem, calc(3.30rem + 0.98vw), 4.00rem);
+  --space-3xl: clamp(5.25rem, calc(4.96rem + 1.46vw), 6.00rem);
+
+  /* One-up pairs */
+  --space-3xs-2xs: clamp(0.25rem, calc(0.15rem + 0.49vw), 0.50rem);
+  --space-2xs-xs: clamp(0.44rem, calc(0.32rem + 0.61vw), 0.75rem);
+  --space-xs-s: clamp(0.69rem, calc(0.57rem + 0.61vw), 1.00rem);
+  --space-s-m: clamp(0.88rem, calc(0.63rem + 1.22vw), 1.50rem);
+  --space-m-l: clamp(1.31rem, calc(1.04rem + 1.34vw), 2.00rem);
+  --space-l-xl: clamp(1.75rem, calc(1.26rem + 2.44vw), 3.00rem);
+  --space-xl-2xl: clamp(2.63rem, calc(2.09rem + 2.68vw), 4.00rem);
+  --space-2xl-3xl: clamp(3.50rem, calc(2.52rem + 4.88vw), 6.00rem);
+
+  /* Custom pairs */
+  --space-s-l: clamp(0.88rem, calc(0.44rem + 2.20vw), 2.00rem);
+}
