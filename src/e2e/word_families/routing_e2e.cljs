@@ -27,12 +27,24 @@
                   (p/catch #(println "Error after suite: " (.-stack %)))
                   (p/finally #(done)))))})
 
-(t/deftest root-path-displays-game-panel
+(t/deftest root-path-displays-home-panel
   (t/async
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser)]
       (.goto page "http://localhost:8080")
+      (p/let [actual-panel-id (.getAttribute (.locator page "#panel-root") "data-test-id")]
+        (t/is (= "home-panel" actual-panel-id))))
+
+    (p/catch (fn [error] (t/do-report {:type :error :actual error})))
+    (p/finally #(done)))))
+
+(t/deftest game-path-displays-game-panel
+  (t/async
+   done
+   (->
+    (p/let [^js page (test-helpers/get-new-page ^js @browser)]
+      (.goto page "http://localhost:8080/game")
       (p/let [actual-panel-id (.getAttribute (.locator page "#panel-root") "data-test-id")]
         (t/is (= "game-panel" actual-panel-id))))
 

@@ -61,6 +61,8 @@
                             (count current-groupables))]
     [:div#panel-root
      {:data-test-id "game-panel"}
+     [:nav
+      [:a {:href "/" :dangerouslySetInnerHTML {:__html "&lsaquo; Retour à l'accueil"}}]]
      [validation-message]
      [:form
       {:on-submit (fn [event]

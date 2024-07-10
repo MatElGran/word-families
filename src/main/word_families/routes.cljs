@@ -11,6 +11,7 @@
 (def ^:private routes
   (atom
    ["/" {"" :home
+         "game" :game
          "settings" :settings}]))
 
 (defn parse

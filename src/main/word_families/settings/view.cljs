@@ -23,6 +23,8 @@
   (let [groups @(rf/subscribe [::subs/groups])]
     [:div#panel-root
      {:data-test-id "settings-panel"}
+     [:nav
+      [:a {:href "/" :dangerouslySetInnerHTML {:__html "&lsaquo; Retour à l'accueil"}}]]
      [:div.center
       [:div.stack
        [:h1 "Configuration"]
