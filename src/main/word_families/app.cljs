@@ -30,6 +30,11 @@
 (defn init []
   (rf/set-loggers! {:debug debug-logger})
   (routes/start!)
-  (rf/dispatch-sync [::events/initialize-db])
-  (dev-setup)
-  (mount-root))
+  (let [path (-> js/window
+                 .-location
+                 .-pathname)
+        route (routes/parse path)
+        active-panel (keyword (str (name (:handler route)) "-panel"))]
+    (rf/dispatch-sync [::events/initialize-db active-panel])
+    (dev-setup)
+    (mount-root)))

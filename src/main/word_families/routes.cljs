@@ -13,7 +13,7 @@
    ["/" {"" :home
          "settings" :settings}]))
 
-(defn- parse
+(defn parse
   [url]
   (bidi/match-route @routes url))
 

@@ -11,9 +11,9 @@
  ::initialize-db
  [(rf/inject-cofx ::local-storage/local-settings)]
  (fn-traced
-  [cofx _]
+  [cofx [_ active-panel]]
   (let [local-settings (:local-settings cofx)]
-    {:db (core/initial-db local-settings)})))
+    {:db (core/initial-db local-settings active-panel)})))
 
 (lib/reg-event-fx
  ::navigate

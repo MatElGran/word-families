@@ -5,9 +5,8 @@
 
   ;; TODO: deserialize settings into a valid clojure structure (namespaced keys) or R/W edn ?
 (defn initial-db
-  [user-settings]
-  (let [settings (settings/init user-settings)]
-    ;; FIXME: should be done according to path
-    {::spec/active-panel :home-panel
+  [user-settings active-panel]
+  (let [ settings (settings/init user-settings)]
+    {::spec/active-panel active-panel
      ::spec/settings settings
      ::spec/current-game (settings/new-random-game settings)}))
