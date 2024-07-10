@@ -1,3 +1,74 @@
-@import "normalize.css" ;
+@import "normalize.css";
 @import "reset.css";
-@import "vars.css" ;
+@import "vars.css";
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url(/fonts/Exo2.woff2) format("woff2"),
+    url(/fonts/Exo2.woff) format("woff"),
+    url(/fonts/Exo2.ttf) format("opentype");
+}
+
+:root {
+  /* Center layout variables */
+  --center-padding: var(--space-m);
+
+  /* Box layout variables */
+  --box-color: var(--color-grey-900);
+  --box-background-color: var(--color-grey-100);
+  --box-padding: var(--space-l) var(--space-l-xl);
+
+  /* Stack layout variables */
+  --stack-spacing: var(--space-l);
+}
+
+:root {
+  font-size: var(--step-0);
+  color: var(--color-primary-900);
+  background-color: var(--color-primary-100);
+}
+
+html {
+  font-family: 'Exo 2', sans-serif;
+}
+
+#root {
+  padding-block-end: var(--space-xl);
+}
+
+h1 {
+  font-size: var(--step-5);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: var(--step-4);
+}
+
+h3 {
+  font-size: var(--step-3);
+}
+
+h4 {
+  font-size: var(--step-2);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-primary-800);
+}
+
+h2,
+h3,
+h4 {
+  --stack-spacing: var(--space-xl);
+}
+
+h2+*,
+h3+*,
+h4+* {
+  --stack-spacing: var(--space-s);
+}

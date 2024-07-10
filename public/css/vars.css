@@ -108,3 +108,10 @@
   /* Custom pairs */
   --space-s-l: clamp(0.88rem, calc(0.44rem + 2.20vw), 2.00rem);
 }
+
+:root {
+  --gap-s: var(--space-xs);
+  --gap: var(--space-s);
+  --gap-l: var(--space-l);
+  --border-radius: .5rem;
+}

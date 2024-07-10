@@ -1,0 +1,17 @@
+@import "layout/box.css";
+@import "layout/center.css";
+@import "layout/stack.css";
+@import "layout/switcher.css";
+@import "components/button.css";
+
+.rounded {
+  border-radius: var(--border-radius);
+}
+
+.box.rounded {
+  box-shadow: 0 0.2rem 0.3rem rgba(89, 87, 87, 0.3);
+}
+
+.setting-item > header > button:first-of-type {
+  margin-inline-start: auto;
+}

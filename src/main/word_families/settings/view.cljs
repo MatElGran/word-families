@@ -5,15 +5,27 @@
    [word-families.settings.events :as events]
    [word-families.settings.subs :as subs]))
 
+(defn- setting-item [group]
+  [:article.setting-item.stack.box.rounded
+   [:header.switcher
+    [:h3 (::spec/name group)]
+    [:button.button-warning.button-small
+     {:on-click #(rf/dispatch [::events/delete-group group])}
+     "Supprimer"]]])
+
+(defn- setting-items [groups]
+  [:<>
+   (map
+    (fn [group] ^{:key (::spec/name group)} [setting-item group])
+    groups)])
+
 (defn render []
   (let [groups @(rf/subscribe [::subs/groups])]
-    [:div#panel-root {:data-test-id "settings-panel"}
-     (map
-      (fn [group]
-        ^{:key (::spec/name group)} [:article.group
-                                   [:h3 (::spec/name group)]
-                                   [:button
-                                    {:on-click #(rf/dispatch [::events/delete-group group])}
-                                    "Supprimer"]
-                                   ])
-      groups)]))
+    [:div#panel-root
+     {:data-test-id "settings-panel"}
+     [:div.center
+      [:div.stack
+       [:h1 "Configuration"]
+       [:section.stack
+        [:h2 "Groupes"]
+        [setting-items groups]]]]]))

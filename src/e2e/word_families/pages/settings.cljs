@@ -2,7 +2,7 @@
   (:require
    [promesa.core :as p]))
 
-(defn get-group-elements [^js locatorizable] (.locator locatorizable ".group"))
+(defn get-group-elements [^js locatorizable] (.locator locatorizable ".setting-item"))
 (defn get-delete-group-buttons [^js locatorizable] (.locator locatorizable "button" #js {:hasText "Supprimer"}))
 
 (defn collect-group-names [^js locatorizable]
