@@ -1,14 +1,14 @@
 (ns word-families.settings.view
   (:require
    [re-frame.core :as rf]
-   [word-families.settings.spec :as spec]
+   [word-families.group :as group]
    [word-families.settings.events :as events]
    [word-families.settings.subs :as subs]))
 
 (defn- setting-item [group]
   [:article.setting-item.stack.box.rounded
    [:header.switcher
-    [:h3 (::spec/name group)]
+    [:h3 (::group/name group)]
     [:button.button-warning.button-small
      {:on-click #(rf/dispatch [::events/delete-group group])}
      "Supprimer"]]])
@@ -16,7 +16,7 @@
 (defn- setting-items [groups]
   [:<>
    (map
-    (fn [group] ^{:key (::spec/name group)} [setting-item group])
+    (fn [group] ^{:key (::group/name group)} [setting-item group])
     groups)])
 
 (defn render []

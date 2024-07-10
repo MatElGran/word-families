@@ -2,20 +2,21 @@
   (:require
    [clojure.spec.alpha :as s]
    [word-families.game.core :as game]
+   [word-families.group :as group]
    [word-families.settings.spec :as spec]))
 
-(def default-groups [{::spec/name "Terre"
-                      ::spec/members ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]
-                      ::spec/traps ["Terminer"]}
-                     {::spec/name "Dent"
-                      ::spec/members ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]
-                      ::spec/traps ["Accident"]}
-                     {::spec/name "Tourner"
-                      ::spec/members ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]
-                      ::spec/traps ["Tourteau"]}
-                     {::spec/name "Cheval"
-                      ::spec/members ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]
-                      ::spec/traps ["Chevelure"]}])
+(def default-groups [(group/init "Terre"
+                                 ["Enterrer" "Terrien" "Terrasse" "Terrier" "Extraterrestre" "Terrain" "Atterrir"]
+                                 ["Terminer"])
+                     (group/init "Dent"
+                                 ["Dentiste" "Dentelle" "Dentier" "Dentaire" "Dentition" "Édenté" "Dentifrice"]
+                                 ["Accident"])
+                     (group/init "Tourner"
+                                 ["Entourer" "Détourner" "Tournoyer" "Tour" "Autour" "Tournevis" "Tourniquet"]
+                                 ["Tourteau"])
+                     (group/init "Cheval"
+                                 ["Chevalin" "Cavalier" "Chevalier" "Chevaleresque"]
+                                 ["Chevelure"])])
 
 (defn init [user-settings]
   (let [valid-user-settings (if (s/valid? ::spec/schema user-settings) user-settings {})
@@ -23,9 +24,10 @@
     {::spec/groups groups}))
 
 (defn- group->answers [group]
-  (let [group-name (::spec/name group)
-        members (::spec/members group)]
-    (zipmap members (repeat group-name))))
+  (let [group-name (::group/name group)
+        members (::group/members group)
+        member-names (map ::group/name members)]
+    (zipmap member-names (repeat group-name))))
 
 (defn- groups->answers [groups]
   (reduce
@@ -35,7 +37,7 @@
    groups))
 
 (defn- traps-virtual-group [groups]
-  {::spec/name "Autre" ::spec/members (flatten (map ::spec/traps groups))})
+  {::group/name "Autre" ::group/members (flatten (map ::group/traps groups))})
 
 (defn- expected-answers [groups]
   (let [groups (conj groups (traps-virtual-group groups))]

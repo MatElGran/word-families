@@ -3,6 +3,7 @@
    ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
+   [word-families.group :as group]
    [word-families.test-helpers :as test-helpers]
    [word-families.settings.spec :as spec]
    [word-families.pages.settings :as page]))
@@ -10,12 +11,12 @@
 (def chromium (.-chromium pw))
 (def browser (atom nil))
 (def local-settings {::spec/groups
-                 [{::spec/name "Terre"
-                   ::spec/members ["Enterrer" "Terrien"]
-                   ::spec/traps ["Terminer"]}
-                  {::spec/name "Dent"
-                   ::spec/members ["Dentiste" "Dentelle"]
-                   ::spec/traps ["Accident"]}]})
+                     [(group/init "Terre"
+                                  ["Enterrer" "Terrien"]
+                                  ["Terminer"])
+                      (group/init "Dent"
+                                  ["Dentiste" "Dentelle"]
+                                  ["Accident"])]})
 
 (use-fixtures :once
   {:before
@@ -64,7 +65,7 @@
 
 ;; FIXME: run server with fixtures
 (t/deftest displays-group-list
-  (let [expected-group-names (into #{} (map ::spec/name (::spec/groups local-settings)))]
+  (let [expected-group-names (into #{} (map ::group/name (::spec/groups local-settings)))]
 
     (t/async
      done
@@ -80,7 +81,7 @@
       (p/finally #(done))))))
 
 (t/deftest user-can-delete-group
-  (let [group-names (map ::spec/name (::spec/groups local-settings))
+  (let [group-names (map ::group/name (::spec/groups local-settings))
         group-to-delete (first group-names)
         remaining-group (last group-names)]
 
@@ -100,7 +101,7 @@
       (p/finally #(done))))))
 
 (t/deftest group-deletion-is-persisted-across-reloads
-  (let [group-names (map ::spec/name (::spec/groups local-settings))
+  (let [group-names (map ::group/name (::spec/groups local-settings))
         group-to-delete (first group-names)
         remaining-group (last group-names)]
 

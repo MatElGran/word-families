@@ -3,6 +3,7 @@
    ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
+   [word-families.group :as group]
    [word-families.settings.spec :as spec]
    [word-families.test-helpers :as test-helpers]))
 
@@ -10,12 +11,12 @@
 (def browser (atom nil))
 
 (def local-settings {::spec/groups
-                     [{::spec/name "Terre"
-                       ::spec/members ["Enterrer" "Terrien"]
-                       ::spec/traps ["Terminer"]}
-                      {::spec/name "Dent"
-                       ::spec/members ["Dentiste" "Dentelle"]
-                       ::spec/traps ["Accident"]}]})
+                     [(group/init "Terre"
+                                  ["Enterrer" "Terrien"]
+                                  ["Terminer"])
+                      (group/init "Dent"
+                                  ["Dentiste" "Dentelle"]
+                                  ["Accident"])]})
 
 (use-fixtures :once
   {:before
@@ -90,8 +91,8 @@
 (defn assert-submit-button-disabled [page disabled?]
   (let [submit-button (get-submit-button page)]
     (test-helpers/after 20
-           #(p/then (.getAttribute submit-button "disabled")
-                    (fn [attribute] (t/is (= disabled? (boolean attribute))))))))
+                        #(p/then (.getAttribute submit-button "disabled")
+                                 (fn [attribute] (t/is (= disabled? (boolean attribute))))))))
 
 (defn assert-success-message-is-displayed [^js page]
   (p/then

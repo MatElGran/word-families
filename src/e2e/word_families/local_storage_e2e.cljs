@@ -3,6 +3,7 @@
    ["playwright-core" :as pw]
    [cljs.test :as t :refer-macros [use-fixtures]]
    [promesa.core :as p]
+   [word-families.group :as group]
    [word-families.settings.core :as settings-core]
    [word-families.settings.spec :as settings-spec]
    [word-families.test-helpers :as test-helpers]
@@ -32,7 +33,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def default-group-names (into #{} (map ::settings-spec/name settings-core/default-groups)))
+(def default-group-names (into #{} (map ::group/name settings-core/default-groups)))
 
 (t/deftest load-default-settings-when-nothing-persisted
   (t/async
