@@ -1,11 +1,13 @@
 (ns word-families.app
-  (:require [reagent.dom :as rdom]
-            [re-frame.core :as rf]
-            [word-families.view :as view]
-            [word-families.events :as events]
-            [word-families.config :as config]
-            [word-families.routes :as routes]
-            [cljs.reader]))
+  (:require
+   [cljs.reader]
+   [clojure.string :as str]
+   [re-frame.core :as rf]
+   [reagent.dom :as rdom]
+   [word-families.config :as config]
+   [word-families.events :as events]
+   [word-families.routes :as routes]
+   [word-families.view :as view]))
 
 ;; init
 
@@ -23,9 +25,12 @@
     (rdom/unmount-component-at-node root-el)
     (rdom/render [view/main-view] root-el)))
 
-(defn- debug-logger [& args]
+(defn- debug-logger
+  "Custom logger, used when calling `re-frame.core/console` with :debug level.
+  see `re-frame.core/set-loggers`"
+  [& args]
   (when config/debug?
-    (.debug js/console "Debug: " (apply str args))))
+    (.debug js/console "%cDebug: " "font-weight: bolder; color: #32cd84;" (str/join " " args))))
 
 (defn init []
   (rf/set-loggers! {:debug debug-logger})
