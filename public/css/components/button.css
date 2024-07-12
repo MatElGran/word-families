@@ -17,6 +17,13 @@
   font-weight: 600;
 }
 
+:is(button, .button, [type="button"]):disabled {
+  background-color: var(--color-primary-300);
+  border-color: var(--color-primary-300);
+  box-shadow: none;
+  cursor: default;
+}
+
 .button-warning {
   --color-active-button: var(--color-red-600);
   color: var(--color-red-100);

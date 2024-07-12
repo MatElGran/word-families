@@ -23,25 +23,5 @@
         groups (or (::spec/groups valid-user-settings) default-groups)]
     {::spec/groups groups}))
 
-(defn- group->answers [group]
-  (let [group-name (::group/name group)
-        members (::group/members group)
-        member-names (map ::group/name members)]
-    (zipmap member-names (repeat group-name))))
-
-(defn- groups->answers [groups]
-  (reduce
-   (fn [memo group]
-     (merge memo (group->answers group)))
-   {}
-   groups))
-
-(defn- traps-virtual-group [groups]
-  {::group/name "Autre" ::group/members (flatten (map ::group/traps groups))})
-
-(defn- expected-answers [groups]
-  (let [groups (conj groups (traps-virtual-group groups))]
-    (groups->answers groups)))
-
 (defn new-random-game [settings]
-  (game/init (expected-answers (::spec/groups settings))))
+  (game/init (::spec/groups settings)))

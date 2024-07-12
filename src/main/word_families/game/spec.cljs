@@ -1,16 +1,29 @@
 (ns word-families.game.spec
   (:require
-   [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]
+   [word-families.group :as group]))
 
-(def answers-map? (s/map-of string? string?))
+(def answers-map? (s/map-of uuid? uuid?))
 
-(s/def ::group-names (s/coll-of string?))
+;; FIXME: Status must be one of the defined values
+(s/def ::status keyword)
+;; FIXME: Color must be one of the defined values
+(s/def ::color string?)
+
+(s/def ::group (s/keys :req [::group/id ::group/name ::color ::status]))
+;; FIXME: At most 5, depending on how many groups are available in settings
+(s/def ::groups (s/coll-of ::group {:count 5}))
 (s/def ::expected-answers answers-map?)
 (s/def ::errors answers-map?)
 (s/def ::answers answers-map?)
+(s/def ::selected-group-name string?)
+(s/def ::display-results? boolean?)
 (s/def ::verified? boolean?)
-(s/def ::schema (s/keys :req [::group-names
+
+(s/def ::schema (s/keys :req [::groups
                               ::expected-answers
                               ::answers
                               ::errors
-                              ::verified?]))
+                              ::display-results?
+                              ::verified?]
+                        :opt [::selected-group-name]))

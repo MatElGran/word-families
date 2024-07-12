@@ -10,6 +10,9 @@
 (def chromium (.-chromium pw))
 (def browser (atom nil))
 
+(def ^:private url
+  "http://localhost:8080/game")
+
 (def local-settings {::spec/groups
                      [(group/init "Terre"
                                   ["Enterrer" "Terrien"]
@@ -18,12 +21,15 @@
                                   ["Dentiste" "Dentelle"]
                                   ["Accident"])]})
 
+;; FIXME: run the server automatically from here
+;; FIXME: Try running this once per run instead of per file
 (use-fixtures :once
   {:before
    (fn []
      (t/async done
               (->
-               (p/let [new-browser (.launch chromium)]
+                ;; FIXME: Set headless mode with an ENV var
+               (p/let [new-browser (.launch chromium #js {:headless true})]
                  (reset! browser new-browser)
                  (println "Browser started"))
                (p/catch #(println "Error before suite: " (.-stack %)))
@@ -37,54 +43,102 @@
                   (p/catch #(println "Error after suite: " (.-stack %)))
                   (p/finally #(done)))))})
 
-(def correct-answers {"Enterrer" "Terre"
-                      "Terrien" "Terre"
-                      "Dentiste" "Dent"
-                      "Dentelle" "Dent"
-                      "Accident" "Autre"
-                      "Terminer" "Autre"})
+;; FIXME: Duplicates injected local settings
+(def correct-groups [{::group/name "Terre"
+                      ::group/members [{::group/name "Enterrer"} {::group/name "Terrien"}]}
+                     {::group/name "Dent"
+                      ::group/members [{::group/name "Dentiste"} {::group/name "Dentelle"}]}
+                     {::group/name "Autre"
+                      ::group/members [{::group/name "Terminer"} {::group/name "Accident"}]}])
 
-(def errors {"Enterrer" "Dent"
-             "Dentiste" "Terre"})
+(def incorrect-groups [{::group/name "Terre"
+                        ::group/members [{::group/name "Dentiste"} {::group/name "Dentelle"}]}
+                       {::group/name "Dent"
+                        ::group/members [{::group/name "Enterrer"} {::group/name "Terrien"}]}
+                       {::group/name "Autre"
+                        ::group/members [{::group/name "Terminer"} {::group/name "Accident"}]}])
+
+;; FIXME: rename
+(defn- make-corrector [expected-groups]
+  (fn [actual-answer]
+    (let [actual-group-name (val actual-answer)
+          actual-groupable-name (key actual-answer)
+          expected-groupable-names (get expected-groups actual-group-name)]
+
+      (some #(= actual-groupable-name %) expected-groupable-names))))
+
+;; FIXME: This duplicates game logic, it should be at least partially exposed by the game module
+(def errors
+  (let [actual-members (into {} (map
+                                 (fn [actual-group]
+                                   [(::group/name actual-group)
+                                    (map ::group/name (::group/members actual-group))])
+                                 incorrect-groups))
+        expected-groups (into {} (map
+                                  (fn [expected-group]
+                                    [(::group/name expected-group)
+                                     (map ::group/name (::group/members expected-group))])
+                                  correct-groups))
+        incorrect? (complement (make-corrector expected-groups))]
+
+    (->> actual-members
+         (map
+          (fn [actual-group]
+            (let [groupable-names (val actual-group)
+                  group-name (key actual-group)
+                  actual-pairs (zipmap groupable-names (repeat group-name))]
+
+              (into {} (filter incorrect? actual-pairs)))))
+         (into {}))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-question-elements [^js locatorizable] (.locator locatorizable "fieldset"))
+(defn- get-groups-container [^js page] (.locator page ".group-cards"))
 
-(defn as_seq [^js locator]
-  (p/let [count (.count locator)]
-    (for [index (range count)] (.nth locator index))))
+(defn- get-groupables-container [^js page] (.locator page ".groupable-cards"))
 
-(defn collect-question-labels [^js locatorizable]
-  (p/let [^js label-elements  (.locator locatorizable "legend")
-          label-texts (.allInnerTexts label-elements)]
+(defn- get-container-cards [^js container] (.locator container ".box"))
+
+(defn get-group-cards [^js locatorizable] (get-container-cards (get-groups-container locatorizable)))
+
+(defn get-groupable-cards [^js locatorizable] (get-container-cards (get-groupables-container locatorizable)))
+
+(defn- get-card-with-label [cards label]
+  (.filter ^js cards #js {:hasText (::group/name label)}))
+
+(defn collect-labels [^js label-elements]
+  (p/let [label-texts (.allInnerTexts label-elements)]
     (into #{} label-texts)))
 
-(defn collect-answers-values [^js locatorizable]
-  (p/let [locators (as_seq (.locator locatorizable "input[type=\"radio\"]"))]
-    (->
-     (map #(.getAttribute % "value") locators)
-     (p/all)
-     (p/then (fn [values] (into #{} values))))))
-
 (defn get-submit-button [^js locatorizable]
-  (.locator locatorizable "input[type=\"submit\"]"))
+  (.locator locatorizable "button[type=\"submit\"]"))
 
-(defn check-radio-button [^js page [name value]]
-  (-> page
-      (.locator (str "input[name=" name "][value=" value "]"))
-      (.click #js {:force true})))
+(defn select-groupable [^js groupable-cards groupable]
+  (p/let [target-groupable-card (get-card-with-label groupable-cards groupable)]
+    (.click target-groupable-card #js {:force true})))
 
-(defn fill-form [page answers]
-  (->
-   (p/all
-    (map (partial check-radio-button page) answers))
-   (p/then (fn [_] page))))
+(defn select-groupables [page group]
+  (let [groupable-cards (get-groupable-cards page)
+        groupables (::group/members group)]
+    (p/all
+     (map
+      #(select-groupable groupable-cards %)
+      groupables))))
+
+(defn fill-form-for-group [^js page group]
+  (p/let [group-cards (get-group-cards page)
+          target-group-card (get-card-with-label group-cards group)]
+    (p/then (.click target-group-card #js {:force true})
+            (fn [_] (select-groupables page group)))))
+
+(defn fill-form [^js page groups]
+  (p/then (p/doseq [group groups] (fill-form-for-group page group))
+          (constantly page)))
 
 (defn submit-form [page]
   (let [submit-button (get-submit-button page)]
     (p/then (.click submit-button)
-            (fn [_] page))))
+            (constantly page))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -118,41 +172,42 @@
   (p/then
    (p/all
     (map
-     #(test-helpers/assert-visible (.locator page (str "[aria-invalid=true][name=" (get % 0) "][value=" (get % 1) "]")))
+    ;; FIXME: setup aria back
+     #(test-helpers/assert-visible (.locator page ".groupable-cards.verified .incorrect" #js {:hasText (key %)}))
      errors))
    (constantly page)))
 
 (defn assert-no-errors-are-displayed [^js page]
   (p/then
-   (test-helpers/assert-not-visible (.locator page "[aria-invalid=true]"))
+    ;; FIXME: setup aria back
+   ;; (test-helpers/assert-not-visible (.locator page "[aria-invalid=true]"))
+   (test-helpers/assert-not-visible (.locator page ".groupable-cards .incorrect"))
    (constantly page)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; FIXME: run server with fixtures
 (t/deftest displays-game-form
-  (let [expected-question-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Accident" "Terminer"}
-        expected-answer-values #{"Terre" "Dent" "Autre"}]
+  (let [expected-groupable-labels #{"Enterrer" "Terrien" "Dentiste" "Dentelle" "Accident" "Terminer"}
+        expected-group-values #{"Terre" "Dent" "Autre"}]
 
     (t/async
      done
      (->
       (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-        (.goto page "http://localhost:8080")
+        (.goto page url)
 
-        (t/testing "elements"
-          (p/let [question-elements (get-question-elements page)]
+        (t/testing "cards"
 
-            (t/testing "labels"
-              (p/let [actual-question-labels (collect-question-labels question-elements)]
-                (t/is (= expected-question-labels actual-question-labels))))
+          (t/testing "groups"
+            (p/let [group-cards (get-group-cards page)
+                    actual-group-values (collect-labels group-cards)]
+              (t/is (= expected-group-values actual-group-values))))
 
-            (t/testing "answers"
-              (p/let [locators (as_seq question-elements)]
-                (p/all
-                 (for [question-element locators]
-                   (p/let [actual-answer-values (collect-answers-values question-element)]
-                     (t/is (= expected-answer-values actual-answer-values))))))))))
+          (t/testing "groupables"
+            (p/let [groupable-cards (get-groupable-cards page)]
+
+              (p/let [actual-groupable-labels (collect-labels groupable-cards)]
+                (t/is (= expected-groupable-labels actual-groupable-labels)))))))
 
       (p/catch (fn [error] (t/do-report {:type :error :actual error})))
       (p/finally #(done))))))
@@ -162,7 +217,7 @@
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-      (.goto page "http://localhost:8080")
+      (.goto page url)
 
       (assert-submit-button-disabled  page true))
 
@@ -174,27 +229,27 @@
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-      (.goto page "http://localhost:8080")
+      (.goto page url)
 
       (p/->
-       (fill-form page correct-answers)
+       (fill-form page correct-groups)
        (assert-submit-button-disabled false)))
 
     (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
 
-(t/deftest user-submit-correct-answer
+(t/deftest user-submit-correct-group
   (t/async
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser , local-settings)]
-      (.goto page "http://localhost:8080")
+      (.goto page url)
 
       (p/-> page
             (assert-success-message-is-not-displayed)
             (assert-failure-message-is-not-displayed)
 
-            (fill-form correct-answers)
+            (fill-form correct-groups)
             (submit-form)
 
             (assert-success-message-is-displayed)
@@ -203,18 +258,18 @@
     (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
 
-(t/deftest user-submit-incorrect-answer
+(t/deftest user-submit-incorrect-group
   (t/async
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-      (.goto page "http://localhost:8080")
+      (.goto page url)
 
       (p/-> page
             (assert-success-message-is-not-displayed)
             (assert-failure-message-is-not-displayed)
 
-            (fill-form (merge correct-answers errors))
+            (fill-form incorrect-groups)
             (submit-form)
 
             (assert-failure-message-is-displayed)
@@ -223,17 +278,17 @@
     (p/catch (fn [error] (t/do-report {:type :error :actual error})))
     (p/finally #(done)))))
 
-(t/deftest incorrect-answer-are-displayed
+(t/deftest incorrect-group-are-displayed
   (t/async
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-      (.goto page "http://localhost:8080")
+      (.goto page url)
 
       (p/-> page
             (assert-no-errors-are-displayed)
 
-            (fill-form (merge correct-answers errors))
+            (fill-form incorrect-groups)
             (submit-form)
 
             (assert-errors-are-displayed errors)))

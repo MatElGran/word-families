@@ -24,6 +24,12 @@
     {:db (assoc db ::spec/current-game game)
      :navigate :game})))
 
+(lib/reg-event-db
+ ::reset-game
+ (fn-traced
+  [db  _]
+  (dissoc db ::spec/current-game)))
+
 (lib/reg-event-fx
  ::navigate
  (fn-traced

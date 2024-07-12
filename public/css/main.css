@@ -30,7 +30,106 @@ nav a {
   box-shadow: 0 0.2rem 0.3rem rgba(89, 87, 87, 0.3);
 }
 
-.setting-item > header > button:first-of-type {
+/*
+ * FIXME: scope to groupable cards and remove the important, maybe even set
+ * this inline in the view (this is coupled to the model)
+ */
+.verified .correct {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset-inline: 0;
+  inset-block: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.modal-overlay>.modal {
+  overflow-y: auto;
+  border-radius: var(--border-radius);
+}
+
+/* Components */
+/* FIXME: Do not use test-ids */
+[data-test-id="game-panel"] {
+  --center-max-size: 150ch;
+}
+
+:is(.group-cards, .groupable-cards) {
+  --stack-spacing: var(--space-3xl);
+  display: grid;
+  grid-gap: var(--gap-l);
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+}
+
+:is(.group-cards, .groupable-cards) .rounded {
+  --border-radius: 2rem;
+}
+
+.group-cards .box {
+  position: relative;
+}
+
+.group-cards ::after {
+  content: " ";
+  position: absolute;
+  top: calc(100% + var(--border-width) + var(--gap-l) * 0.4);
+  left: 0;
+  min-width: 100%;
+  border-radius: var(--border-radius);
+  border: .25rem solid transparent;
+  transition: border-color 0.25s ease-in-out;
+}
+
+.group-cards .selected::after {
+  border-color: var(--card-color);
+}
+
+:is(.group-cards, .groupable-cards) .box {
+  --border-color: var(--box-background-color);
+  --border-width: 1rem;
+  border-width: 1rem;
+  border-style: solid;
+  border-color: var(--card-color, var(--border-color));
+  box-shadow: 5px 5px rgba(35, 35, 35, 0.3), 5px 5px var(--card-color, var(--border-color));
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+:is(.group-cards, .groupable-cards) .box[data-color='red'] {
+  --card-color: var(--color-red-500);
+}
+
+:is(.group-cards, .groupable-cards) .box[data-color='green'] {
+  --card-color: var(--color-green-500);
+}
+
+:is(.group-cards, .groupable-cards) .box[data-color='purple'] {
+  --card-color: var(--color-purple-500);
+}
+
+:is(.group-cards, .groupable-cards) .box[data-color='yellow'] {
+  --card-color: var(--color-yellow-500);
+}
+
+:is(.group-cards, .groupable-cards) .box[data-color='blue'] {
+  --card-color: var(--color-blue-500);
+}
+
+.deck {
+  --stack-spacing: var(--space-3xl);
+}
+
+.setting-item>header>button:first-of-type {
   margin-inline-start: auto;
 }
 

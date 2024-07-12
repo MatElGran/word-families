@@ -8,7 +8,8 @@
 (s/def ::settings ::settings/schema)
 (s/def ::current-game ::game/schema)
 (s/def ::active-panel keyword?)
-(s/def ::schema (s/keys :req [::active-panel ::current-game ::settings]))
+(s/def ::schema (s/keys :req [::active-panel  ::settings]
+                        :opt [::current-game]))
 
 (defn valid-schema?
   "validate the given db, writing any problems to console.error"

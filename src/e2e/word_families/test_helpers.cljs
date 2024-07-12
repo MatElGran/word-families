@@ -4,8 +4,7 @@
    [cljs.test :as t]
    [clojure.string :as str]
    [promesa.core :as p]
-   [promesa.exec :as exec]
-   [word-families.settings.spec :as settings]))
+   [promesa.exec :as exec]))
 
 (defn render-init-script [local-settings]
   (let [template  (.toString (.readFileSync fs "resources/e2e/e2e_init_script.template.js"))
@@ -25,7 +24,7 @@
 (defn get-new-page
   ([^js browser]
    (p/let [^js page (.newPage browser)]
-     (.addInitScript page #js {:path "resources/e2e/disable_re_frame_10x.js" })
+     (.addInitScript page #js {:path "resources/e2e/disable_re_frame_10x.js"})
      page))
   ([^js browser local-settings]
    (p/let [^js page (get-new-page browser)]
