@@ -1,15 +1,10 @@
-/*
- * TODO: active and hover states
- */
-
-:is(button, .button, [type="button"]) {
-  --color-active-button: var(--color-primary-600);
-
-  color: var(--color-primary-900);
+:is(button, .button, [type="button"], [type="reset"], [type="submit"]) {
+  --button-shadow-color: var(--color-primary-600);
   background-color: var(--color-primary);
   border: 4px solid var(--color-primary);
+  color: var(--color-primary-900);
   border-radius: var(--border-radius);
-  box-shadow: 0 .2rem .2rem var(--color-primary-600);
+  box-shadow: 0 .2rem .2rem var(--button-shadow-color);
   text-decoration: none;
   text-align: center;
   cursor: pointer;
@@ -17,33 +12,30 @@
   font-weight: 600;
 }
 
-:is(button, .button, [type="button"]):disabled {
+:is(button, .button, [type="button"], [type="reset"], [type="submit"]):disabled {
   background-color: var(--color-primary-300);
   border-color: var(--color-primary-300);
+  color: var(--color-primary-600);
   box-shadow: none;
   cursor: default;
 }
 
-.button-warning {
-  --color-active-button: var(--color-red-600);
-  color: var(--color-red-100);
-  background-color: var(--color-red-500);
-  border-color: var(--color-red-500);
-  box-shadow: 0 .2rem .2rem var(--color-red-600);
+:is(button, .button, [type="button"], [type="reset"], [type="submit"]):hover {
+  box-shadow: 0 .3rem .3rem var(--button-shadow-color);
 }
 
-.button-small {
-  font-size: var(--step--1);
+:is(button, .button, [type="button"], [type="reset"], [type="submit"]):active {
+  box-shadow: 0 .1rem .1rem var(--button-shadow-color);
+}
+
+:is(button, .button, [type="button"], [type="reset"], [type="submit"]):focus-visible {
+  box-shadow: inset .2rem .2rem currentColor, inset -.2rem -.2rem currentColor, 0 .2rem .2rem var(--color-primary-600);
+  outline: 1px solid transparent;
+  position: relative;
 }
 
 .button-large {
   font-size: var(--step-2);
-}
-
-:is(button, .button, [type="button"]):active {
-  box-shadow: none;
-  background-color: var(--color-active-button);
-  border-color: var(--color-active-button);
 }
 
 .button-small {
@@ -51,4 +43,11 @@
   padding: var(--space-3xs) var(--space-xs);
   max-width: fit-content;
   font-weight: 500;
+}
+
+.button-warning {
+  --button-shadow-color: var(--color-red-600);
+  background-color: var(--color-red-500);
+  border-color: var(--color-red-500);
+  color: var(--color-red-100);
 }
