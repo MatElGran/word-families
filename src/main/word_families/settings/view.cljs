@@ -3,21 +3,18 @@
    [re-frame.core :as rf]
    [word-families.group :as group]
    [word-families.settings.events :as events]
+   [word-families.components.settings.group.show :as show-group-settings]
    [word-families.settings.subs :as subs]))
 
-(defn- setting-item [group]
-  [:article.setting-item.stack.box.rounded
-   [:header.switcher
-    [:h3 (::group/name group)]
-    [:button.button-warning.button-small
-     {:on-click #(rf/dispatch [::events/delete-group group])}
-     "Supprimer"]]])
-
-(defn- setting-items [groups]
+(defn- groups-settings [groups]
   [:<>
-   (map
-    (fn [group] ^{:key (::group/name group)} [setting-item group])
-    groups)])
+   (doall
+    (map
+     (fn [group]
+       ^{:key (::group/id group)}
+       [show-group-settings/render group
+        {:on-delete #(rf/dispatch [::events/delete-group group])}])
+     groups))])
 
 (defn render []
   (let [groups @(rf/subscribe [::subs/groups])]
@@ -30,4 +27,4 @@
        [:h1 "Configuration"]
        [:section.stack
         [:h2 "Groupes"]
-        [setting-items groups]]]]]))
+        [groups-settings groups]]]]]))

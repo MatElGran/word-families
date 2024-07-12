@@ -23,6 +23,13 @@
 (defn- init-groupables
   [groupable-names]
   (map init-groupable groupable-names))
+(defn member-names
+  [group]
+  (map ::name (::members group)))
+
+(defn trap-names
+  [group]
+  (map ::name (::traps group)))
 
 (defn init
   [name members traps]

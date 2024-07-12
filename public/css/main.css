@@ -133,6 +133,19 @@ nav a {
   margin-inline-start: auto;
 }
 
+footer.actions {
+  display: flex;
+  align-items: center;
+}
+
+footer.actions .actions-right {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--gap);
+}
+
 #main-menu {
   text-align: center;
   --box-padding: var(--space-xl) var(--space-3xl);
