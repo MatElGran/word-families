@@ -1,19 +1,23 @@
 (ns word-families.settings.view
   (:require
    [re-frame.core :as rf]
+   [reagent.core :as reagent]
    [word-families.group :as group]
    [word-families.settings.events :as events]
    [word-families.components.settings.group.show :as show-group-settings]
    [word-families.settings.subs :as subs]))
 
+(defn- group-settings-item [group status]
+  (case @status
+    "show" [show-group-settings/render
+            {:on-delete #(rf/dispatch [::events/delete-group group])}
+            group]))
+
 (defn- groups-settings [groups]
   [:<>
    (doall
     (map
-     (fn [group]
-       ^{:key (::group/id group)}
-       [show-group-settings/render group
-        {:on-delete #(rf/dispatch [::events/delete-group group])}])
+     (fn [group] ^{:key (::group/id group)} [group-settings-item group (reagent/atom "show")])
      groups))])
 
 (defn render []

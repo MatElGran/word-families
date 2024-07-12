@@ -3,7 +3,7 @@
    [clojure.string :as str]
    [word-families.group :as group]))
 
-(defn render [group {:keys [on-delete]}]
+(defn render [{:keys [on-delete]} group]
   (let [member-names (group/member-names group)
         trap-names (group/trap-names group)]
 
