@@ -11,6 +11,7 @@
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
+(def url "http://localhost:8080/settings")
 
 (use-fixtures :once
   {:before
@@ -40,7 +41,7 @@
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser)]
-      (.goto page "http://localhost:8080/settings")
+      (.goto page url)
 
       (p/let [group-elements (page/get-group-elements page)
               actual-groups (page/collect-group-names group-elements)]
@@ -54,7 +55,7 @@
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser "{")]
-      (.goto page "http://localhost:8080/settings")
+      (.goto page url)
 
       (p/let [group-elements (page/get-group-elements page)
               actual-groups (page/collect-group-names group-elements)]
@@ -68,7 +69,7 @@
    done
    (->
     (p/let [^js page (test-helpers/get-new-page ^js @browser {::settings-spec/groups [{:name "Terre"}]})]
-      (.goto page "http://localhost:8080/settings")
+      (.goto page url)
 
       (p/let [group-elements (page/get-group-elements page)
               actual-groups (page/collect-group-names group-elements)]

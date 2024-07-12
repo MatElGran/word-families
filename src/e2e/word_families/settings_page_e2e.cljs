@@ -10,6 +10,7 @@
 
 (def chromium (.-chromium pw))
 (def browser (atom nil))
+(def url "http://localhost:8080/settings")
 (def local-settings {::spec/groups
                      [(group/init "Terre"
                                   ["Enterrer" "Terrien"]
@@ -71,7 +72,7 @@
      done
      (->
       (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-        (.goto page "http://localhost:8080/settings")
+        (.goto page url)
 
         (p/let [group-elements (page/get-group-elements page)
                 actual-groups (page/collect-group-names group-elements)]
@@ -89,7 +90,7 @@
      done
      (->
       (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-        (.goto page "http://localhost:8080/settings")
+        (.goto page url)
 
         (p/-> page
               (assert-each-group-has-a-delete-button)
@@ -109,7 +110,7 @@
      done
      (->
       (p/let [^js page (test-helpers/get-new-page ^js @browser local-settings)]
-        (.goto page "http://localhost:8080/settings")
+        (.goto page url)
 
         (p/-> page
               (page/click-delete-group-button group-to-delete)
