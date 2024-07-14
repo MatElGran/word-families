@@ -1,7 +1,7 @@
 (ns word-families.core
   (:require
-   [word-families.spec :as spec]
-   [word-families.settings.core :as settings]))
+   [word-families.settings.core :as settings]
+   [word-families.spec :as spec]))
 
 (defn initial-db
   [user-settings route]

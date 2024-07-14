@@ -51,3 +51,13 @@
   border-color: var(--color-red-500);
   color: var(--color-red-100);
 }
+
+.button-outline {
+  color: var(--color-primary-800);
+  background-color: var(--color-grey-100);
+  /*
+ * Increase padding a bit to compensate the button looking
+ * a bit smaller when displayed besides plain buttons
+ */
+  padding: calc(var(--space-3xs) + 0.075rem) calc(var(--space-xs) + 0.075rem);
+}

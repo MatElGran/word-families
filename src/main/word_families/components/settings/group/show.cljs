@@ -3,7 +3,7 @@
    [clojure.string :as str]
    [word-families.group :as group]))
 
-(defn render [{:keys [on-delete]} group]
+(defn render [{:keys [on-edit]} group]
   (let [member-names (group/member-names group)
         trap-names (group/trap-names group)]
 
@@ -19,4 +19,6 @@
 
      [:footer.actions
       [:span.actions-right
-       [:button.button-small.button-warning {:on-click on-delete} "Supprimer"]]]]))
+       [:button.button-small
+        {:on-click on-edit}
+        "Modifier"]]]]))

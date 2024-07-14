@@ -5,14 +5,11 @@
 
 (def answers-map? (s/map-of uuid? uuid?))
 
-;; FIXME: Status must be one of the defined values
-(s/def ::status keyword)
 ;; FIXME: Color must be one of the defined values
 (s/def ::color string?)
 
-(s/def ::group (s/keys :req [::group/id ::group/name ::color ::status]))
-;; FIXME: At most 5, depending on how many groups are available in settings
-(s/def ::groups (s/coll-of ::group {:count 5}))
+(s/def ::group (s/keys :req [::group/id ::group/name ::color]))
+(s/def ::groups (s/coll-of ::group))
 (s/def ::expected-answers answers-map?)
 (s/def ::errors answers-map?)
 (s/def ::answers answers-map?)
