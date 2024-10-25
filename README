@@ -1,7 +1,7 @@
 # Word families
 
 This is a simple web-based game where the player must associate cards from a deck with their corresponding group.
-This is a MPV (Minimal Playable Version) as specified by the client, my sister, which teaches to young children and uses this to keep busy those pupils that may finish their activities sooner than anticipated.
+This is a MPV (Minimal Playable Version) as specified by the client, my sister, who teaches to young children and uses this to keep busy those pupils that may finish their activities sooner than anticipated.
 This also provided a good excuse to get a bit more familiar with ClojureScript and Re-frame, which I enjoyed while building an earlier toy project.
 
 ## Dependencies
